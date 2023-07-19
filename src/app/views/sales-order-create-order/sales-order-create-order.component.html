@@ -1,0 +1,193 @@
+<form *ngIf="{ orders: getActiveOrders() } as context" #ngForm="ngForm" [formGroup]="form" (submit)="saveSalesOrder()">
+    <ng-template #optionsTranslateTpl let-data="data">
+        {{ data.label | translate }}
+    </ng-template>
+
+    <div class="tw-text-xl tw-font-bold tw-mb-4">
+        {{ 'sales_order.orders' | translate }}
+    </div>
+
+    <ng-container *ngFor="let order of context.orders; index as orderIdx; last as isLastOrder">
+        <p-fieldset [legend]="getOrderHeader(orderIdx, order.value)" class="tw-block tw-mt-4">
+            <p-messages
+                *ngIf="getActiveOrderItems(order.controls.orderitems).length === 0"
+                severity="info"
+                class="p-message__single"
+            >
+                <ng-template pTemplate>
+                    <div class="tw-text-center tw-w-full">
+                        <div>
+                            {{ 'sales_order.empty_order_item_please_add' | translate }}
+                        </div>
+                        <button
+                            type="button"
+                            class="p-button-outlined tw-mt-4"
+                            pButton
+                            [label]="'sales_order.add_order_item' | translate"
+                            (click)="addOrderItem(order.controls.orderitems)"
+                        ></button>
+                    </div>
+                </ng-template>
+            </p-messages>
+
+            <div class="tw-flex tw-flex-col tw-gap-2">
+                <ng-container
+                    *ngFor="let orderItem of getActiveOrderItems(order.controls.orderitems); last as isLastOrderItem"
+                >
+                    <p-panel
+                        [header]="getOrderItemsHeader(orderItem.value)"
+                        [formGroup]="orderItem"
+                        [toggleable]="true"
+                    >
+                        <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-3 tw-gap-4">
+                            <div class="tw-flex tw-flex-col tw-gap-2">
+                                <label>
+                                    {{ 'sales_order.vehicle_part' | translate }}
+                                    <span class="tw-text-red-500">*</span>
+                                </label>
+                                <p-dropdown
+                                    formControlName="vehicle_part"
+                                    [options]="vehiclePartOptions"
+                                    [filter]="true"
+                                    styleClass="tw-w-full"
+                                >
+                                    <ng-template pTemplate="selectedItem" let-data>
+                                        <ng-container
+                                            *ngTemplateOutlet="optionsTranslateTpl; context: { data: data }"
+                                        ></ng-container>
+                                    </ng-template>
+                                    <ng-template pTemplate="item" let-data>
+                                        <ng-container
+                                            *ngTemplateOutlet="optionsTranslateTpl; context: { data: data }"
+                                        ></ng-container>
+                                    </ng-template>
+                                </p-dropdown>
+                            </div>
+                            <div class="tw-flex tw-flex-col tw-gap-2">
+                                <label>{{ 'sales_order.job_type' | translate }}</label>
+                                <p-multiSelect
+                                    formControlName="job_type"
+                                    [options]="jobTypeOptions"
+                                    [filter]="false"
+                                    styleClass="tw-w-full"
+                                >
+                                    <ng-template pTemplate="selectedItems" let-data>
+                                        {{ getJobTypeLabel(data) }}&nbsp;
+                                    </ng-template>
+                                    <ng-template pTemplate="item" let-data>
+                                        <ng-container
+                                            *ngTemplateOutlet="optionsTranslateTpl; context: { data: data }"
+                                        ></ng-container>
+                                    </ng-template>
+                                </p-multiSelect>
+                            </div>
+                            <div class="tw-flex tw-flex-col tw-gap-2">
+                                <label>
+                                    {{ 'sales_order.item_name' | translate }}
+                                    <span class="tw-text-red-500">*</span>
+                                </label>
+                                <p-dropdown
+                                    formControlName="item_name"
+                                    [options]="itemNameOptions"
+                                    [filter]="true"
+                                    styleClass="tw-w-full"
+                                ></p-dropdown>
+                            </div>
+                            <div class="tw-flex tw-flex-col tw-gap-2">
+                                <label>
+                                    {{ 'sales_order.claim_insurance' | translate }}
+                                    <span class="tw-text-red-500">*</span>
+                                </label>
+                                <p-dropdown
+                                    formControlName="claim_insurance"
+                                    [options]="[
+                                        { label: 'general_yes_option', value: true },
+                                        { label: 'general_no_option', value: false }
+                                    ]"
+                                    styleClass="tw-w-full"
+                                >
+                                    <ng-template pTemplate="selectedItem" let-data>
+                                        <ng-container
+                                            *ngTemplateOutlet="optionsTranslateTpl; context: { data: data }"
+                                        ></ng-container>
+                                    </ng-template>
+                                    <ng-template pTemplate="item" let-data>
+                                        <ng-container
+                                            *ngTemplateOutlet="optionsTranslateTpl; context: { data: data }"
+                                        ></ng-container>
+                                    </ng-template>
+                                </p-dropdown>
+                            </div>
+                            <div class="tw-flex tw-flex-col tw-gap-2 lg:tw-col-span-2">
+                                <label>{{ 'remarks' | translate }}</label>
+                                <input type="text" pInputText formControlName="remarks" />
+                            </div>
+                        </div>
+
+                        <div class="tw-flex tw-justify-end tw-gap-2 tw-mt-4">
+                            <button
+                                *ngIf="isLastOrderItem"
+                                type="button"
+                                class="p-button-outlined"
+                                pButton
+                                [label]="'sales_order.add_order_item' | translate"
+                                (click)="addOrderItem(order.controls.orderitems)"
+                            ></button>
+                            <button
+                                type="button"
+                                class="p-button-danger p-button-outlined"
+                                pButton
+                                [label]="'sales_order.remove_order_item' | translate"
+                                (click)="orderItem.controls.is_active.setValue(false)"
+                            ></button>
+                        </div>
+                    </p-panel>
+                </ng-container>
+            </div>
+
+            <div class="tw-flex tw-justify-end tw-gap-2 tw-mt-4">
+                <button
+                    *ngIf="isLastOrder"
+                    type="button"
+                    class="p-button-outlined"
+                    pButton
+                    [label]="'sales_order.add_order' | translate"
+                    (click)="openAddIntoOrderDialog()"
+                ></button>
+                <button
+                    type="button"
+                    class="p-button-danger p-button-outlined"
+                    pButton
+                    [label]="'sales_order.remove_order' | translate"
+                    (click)="order.controls.is_active.setValue(false)"
+                ></button>
+            </div>
+        </p-fieldset>
+    </ng-container>
+
+    <p-messages *ngIf="context.orders.length === 0" severity="info" class="tw-block tw-my-4 p-message__single">
+        <ng-template pTemplate>
+            <div class="tw-text-center tw-w-full">
+                <div>
+                    {{ 'sales_order.empty_order_please_add' | translate }}
+                </div>
+                <button
+                    type="button"
+                    class="p-button-outlined tw-mt-4"
+                    pButton
+                    [label]="'sales_order.add_order' | translate"
+                    (click)="openAddIntoOrderDialog()"
+                ></button>
+            </div>
+        </ng-template>
+    </p-messages>
+
+    <div class="tw-flex tw-justify-end tw-gap-2 tw-mt-4">
+        <button
+            pButton="p-button-lg"
+            [label]="'next' | translate"
+            type="submit"
+            [disabled]="context.orders.length === 0"
+        ></button>
+    </div>
+</form>

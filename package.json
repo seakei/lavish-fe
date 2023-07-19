@@ -1,0 +1,58 @@
+{
+    "name": "lavish-frontend",
+    "version": "0.0.0",
+    "scripts": {
+        "ng": "ng",
+        "start": "ng serve --host \"0.0.0.0\" --disable-host-check",
+        "build": "ng build",
+        "watch": "ng build --watch --configuration development",
+        "pretty": "prettier --ignore-path .gitignore --write \"./**/*.{json,js,html,css,scss,ts}\"",
+        "prepare_husky": "cd ../ && husky install",
+        "remove_husky": "cd ../ && husky uninstall"
+    },
+    "private": true,
+    "dependencies": {
+        "@angular/animations": "^15.2.0",
+        "@angular/cdk": "^15.2.9",
+        "@angular/common": "^15.2.0",
+        "@angular/compiler": "^15.2.0",
+        "@angular/core": "^15.2.0",
+        "@angular/forms": "^15.2.0",
+        "@angular/platform-browser": "^15.2.0",
+        "@angular/platform-browser-dynamic": "^15.2.0",
+        "@angular/router": "^15.2.0",
+        "@fullcalendar/angular": "^6.1.8",
+        "@fullcalendar/core": "^6.1.8",
+        "@fullcalendar/timegrid": "^6.1.8",
+        "@ngx-translate/core": "^14.0.0",
+        "@ngx-translate/http-loader": "^7.0.0",
+        "date-fns": "^2.30.0",
+        "primeicons": "^6.0.1",
+        "primeng": "^15.4.1",
+        "rxjs": "~7.8.0",
+        "signature_pad": "^4.1.5",
+        "tslib": "^2.3.0",
+        "zone.js": "~0.12.0"
+    },
+    "devDependencies": {
+        "@angular-devkit/build-angular": "^15.2.8",
+        "@angular/cli": "~15.2.8",
+        "@angular/compiler-cli": "^15.2.0",
+        "autoprefixer": "^10.4.14",
+        "husky": "^8.0.3",
+        "lint-staged": "^13.2.2",
+        "postcss": "^8.4.23",
+        "prettier": "^2.8.8",
+        "tailwindcss": "^3.3.2",
+        "typescript": "~4.9.4"
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "semi": true,
+        "singleQuote": true,
+        "printWidth": 120
+    },
+    "lint-staged": {
+        "*.{json,js,html,css,scss,ts}": "prettier --write"
+    }
+}

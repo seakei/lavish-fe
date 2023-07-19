@@ -1,0 +1,109 @@
+<p-toast></p-toast>
+<p-card>
+    <ng-template pTemplate="title">
+        <div class="tw-flex tw-gap-2 tw-items-center">
+            <a backClick pButton icon="pi pi-chevron-left" class="p-button-rounded p-button-outlined tw-shrink-0"></a>
+            <div class="tw-ml-2">
+                {{ (form.controls.uuid.value === '' ? 'create_user' : 'edit_user') | translate }}
+            </div>
+        </div>
+    </ng-template>
+
+    <form #ngForm="ngForm" [formGroup]="form" (submit)="save()">
+        <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+            <label>{{ 'username' | translate }} <span class="tw-text-red-500">*</span></label>
+            <input type="text" pInputText formControlName="username" />
+            <small class="p-error" *ngIf="ngForm.submitted && form.get('username')!.invalid">
+                {{ 'error_field_required' | translate }}
+            </small>
+        </div>
+        <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4" *ngIf="form.controls.uuid.value === ''">
+            <label>{{ 'password' | translate }} <span class="tw-text-red-500">*</span></label>
+            <p-password
+                formControlName="password"
+                [feedback]="false"
+                [toggleMask]="true"
+                styleClass="tw-w-full"
+                inputStyleClass="tw-w-full"
+            ></p-password>
+            <ng-container *ngIf="ngForm.submitted && form.get('password')!.invalid">
+                <small class="p-error" *ngIf="form.get('password')!.errors?.['required']">
+                    {{ 'error_field_required' | translate }}
+                </small>
+                <small class="p-error" *ngIf="form.get('password')!.errors?.['minlength']">
+                    {{ 'error_password_too_short' | translate }}
+                </small>
+            </ng-container>
+        </div>
+
+        <ng-container [formGroup]="form.controls.partner">
+            <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+                <label>{{ 'mobile_no' | translate }} <span class="tw-text-red-500">*</span></label>
+                <input type="text" pInputText formControlName="phone_number" placeholder="60123456789" />
+                <small class="p-error" *ngIf="ngForm.submitted && form.get('partner.phone_number')!.invalid">
+                    {{ 'error_field_required' | translate }}
+                </small>
+            </div>
+            <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+                <label>{{ 'name' | translate }} <span class="tw-text-red-500">*</span></label>
+                <input type="text" pInputText formControlName="name" placeholder="John Doe" />
+                <small class="p-error" *ngIf="ngForm.submitted && form.get('partner.name')!.invalid">
+                    {{ 'error_field_required' | translate }}
+                </small>
+            </div>
+            <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+                <label>{{ 'email' | translate }} <span class="tw-text-red-500">*</span></label>
+                <input type="text" pInputText formControlName="email" placeholder="john.doe@gmail.com" />
+                <ng-container *ngIf="ngForm.submitted && form.get('partner.email')!.invalid">
+                    <small class="p-error" *ngIf="form.get('partner.email')!.errors?.['required']">
+                        {{ 'error_field_required' | translate }}
+                    </small>
+                    <small class="p-error" *ngIf="form.get('partner.email')!.errors?.['email']">
+                        {{ 'error_invalid_email' | translate }}
+                    </small>
+                </ng-container>
+            </div>
+            <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+                <label>{{ 'role' | translate }} <span class="tw-text-red-500">*</span></label>
+                <div *ngFor="let item of roleOptions; index as idx">
+                    <p-radioButton [inputId]="'role' + idx" [value]="item.value" formControlName="role"></p-radioButton>
+                    <label [for]="'role' + idx" class="tw-ml-2 tw-cursor-pointer">{{ item.label | translate }}</label>
+                </div>
+            </div>
+            <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+                <label>{{ 'branch' | translate }} <span class="tw-text-red-500">*</span></label>
+                <div *ngFor="let branch of branchOptions; index as idx">
+                    <p-radioButton [inputId]="'branch' + idx" [value]="branch" formControlName="branch"></p-radioButton>
+                    <label [for]="'branch' + idx" class="tw-ml-2 tw-cursor-pointer">{{ branch }}</label>
+                </div>
+            </div>
+            <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+                <label>{{ 'profile_status' | translate }} <span class="tw-text-red-500">*</span></label>
+                <div *ngFor="let item of profileStatusOptions; index as idx">
+                    <p-radioButton
+                        [inputId]="'status' + idx"
+                        [value]="item.value"
+                        formControlName="profile_status"
+                    ></p-radioButton>
+                    <label [for]="'status' + idx" class="tw-ml-2 tw-cursor-pointer">{{ item.label | translate }}</label>
+                </div>
+            </div>
+        </ng-container>
+
+        <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+            <label>{{ 'is_active_label' | translate }} <span class="tw-text-red-500">*</span></label>
+            <div>
+                <p-radioButton inputId="isactive0" [value]="true" formControlName="is_active"></p-radioButton>
+                <label for="isactive0" class="tw-ml-2 tw-cursor-pointer">{{ 'is_active_label_yes' | translate }}</label>
+            </div>
+            <div>
+                <p-radioButton inputId="isactive1" [value]="false" formControlName="is_active"></p-radioButton>
+                <label for="isactive1" class="tw-ml-2 tw-cursor-pointer">{{ 'is_active_label_no' | translate }}</label>
+            </div>
+        </div>
+
+        <div class="tw-flex tw-justify-end">
+            <button pButton="p-button-lg" [label]="'save' | translate" type="submit"></button>
+        </div>
+    </form>
+</p-card>

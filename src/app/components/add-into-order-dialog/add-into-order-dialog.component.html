@@ -1,0 +1,54 @@
+<form #ngForm="ngForm" [formGroup]="form" (submit)="generate()">
+    <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+        <label>{{ 'sales_order.order_type' | translate }} <span class="tw-text-red-500">*</span></label>
+        <p-dropdown
+            formControlName="order_type"
+            [options]="orderTypeOptions"
+            [filter]="true"
+            styleClass="tw-w-full"
+            [appendTo]="'body'"
+        >
+            <ng-template pTemplate="selectedItem" let-data>
+                {{ data.label | translate }}
+            </ng-template>
+            <ng-template pTemplate="item" let-data>
+                {{ data.label | translate }}
+            </ng-template>
+        </p-dropdown>
+    </div>
+
+    <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+        <label>{{ 'sales_order.order_mode' | translate }} <span class="tw-text-red-500">*</span></label>
+        <div *ngFor="let item of orderModeOptions; index as idx">
+            <p-radioButton
+                [inputId]="'ordermode' + idx"
+                [value]="item.value"
+                formControlName="order_mode"
+            ></p-radioButton>
+            <label [for]="'ordermode' + idx" class="tw-ml-2 tw-cursor-pointer">
+                {{ item.label | translate }}
+            </label>
+        </div>
+    </div>
+
+    <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4" *ngIf="form.controls.order_mode.value === orderModeEnum.PACKAGE">
+        <label>{{ 'sales_order.product_package' | translate }} <span class="tw-text-red-500">*</span></label>
+        <div *ngFor="let item of getPackageOptions(form.controls.order_type.value); index as idx">
+            <p-radioButton
+                [inputId]="'productpkg' + idx"
+                [value]="item.value"
+                formControlName="product_package"
+            ></p-radioButton>
+            <label [for]="'productpkg' + idx" class="tw-ml-2 tw-cursor-pointer">
+                {{ item.label }}
+            </label>
+        </div>
+        <div *ngIf="ngForm.submitted && form.controls.product_package?.errors?.required">
+            <small class="p-error">{{ 'error_field_required' | translate }}</small>
+        </div>
+    </div>
+
+    <div class="tw-mt-4 tw-flex tw-justify-end">
+        <button type="submit" pButton [label]="'add' | translate"></button>
+    </div>
+</form>

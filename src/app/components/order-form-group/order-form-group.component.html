@@ -1,0 +1,69 @@
+<ng-template #optionsTranslateTpl let-data="data">
+    {{ data.label | translate }}
+</ng-template>
+
+<ng-container *ngFor="let orderItem of orderFormGroup.controls.orderitems.controls; index as orderIdx">
+    <ng-container [formGroup]="orderItem">
+        <p-panel
+            [header]="'#' + (orderIdx + 1) + ' ' + orderItem.controls.vehicle_part.value"
+            [toggleable]="true"
+            class="tw-mb-2 tw-block"
+        >
+            <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-4">
+                <div class="tw-flex tw-flex-col tw-gap-2">
+                    <label>{{ 'job_type' | translate }} <span class="tw-text-red-500">*</span></label>
+                    <p-multiSelect
+                        formControlName="job_type"
+                        [options]="jobTypeOptions"
+                        [filter]="false"
+                        styleClass="tw-w-full"
+                    >
+                        <ng-template pTemplate="selectedItems" let-data>
+                            {{ getJobTypeLabel(data) }}&nbsp;
+                        </ng-template>
+                        <ng-template pTemplate="item" let-data>
+                            <ng-container
+                                *ngTemplateOutlet="optionsTranslateTpl; context: { data: data }"
+                            ></ng-container>
+                        </ng-template>
+                    </p-multiSelect>
+                </div>
+                <div class="tw-flex tw-flex-col tw-gap-2">
+                    <label>{{ 'item_name' | translate }} <span class="tw-text-red-500">*</span></label>
+                    <p-dropdown
+                        formControlName="item_name"
+                        [options]="itemNameOptions"
+                        [filter]="true"
+                        styleClass="tw-w-full"
+                    ></p-dropdown>
+                </div>
+                <div class="tw-flex tw-flex-col tw-gap-2">
+                    <label>{{ 'claim_insurance' | translate }} <span class="tw-text-red-500">*</span></label>
+                    <p-dropdown
+                        formControlName="claim_insurance"
+                        [options]="[
+                            { label: 'general_yes_option', value: true },
+                            { label: 'general_no_option', value: false }
+                        ]"
+                        styleClass="tw-w-full"
+                    >
+                        <ng-template pTemplate="selectedItem" let-data>
+                            <ng-container
+                                *ngTemplateOutlet="optionsTranslateTpl; context: { data: data }"
+                            ></ng-container>
+                        </ng-template>
+                        <ng-template pTemplate="item" let-data>
+                            <ng-container
+                                *ngTemplateOutlet="optionsTranslateTpl; context: { data: data }"
+                            ></ng-container>
+                        </ng-template>
+                    </p-dropdown>
+                </div>
+                <div class="tw-flex tw-flex-col tw-gap-2">
+                    <label>{{ 'remarks' | translate }}</label>
+                    <input type="text" pInputText formControlName="remarks" />
+                </div>
+            </div>
+        </p-panel>
+    </ng-container>
+</ng-container>

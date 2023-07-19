@@ -1,0 +1,13 @@
+<p-card>
+    <ng-template pTemplate="title">
+        <div class="tw-flex tw-gap-2 tw-items-center">
+            <!-- <a backClick pButton icon="pi pi-chevron-left" class="p-button-rounded p-button-outlined tw-shrink-0"></a> -->
+            <div>{{ 'settings' | translate }}</div>
+        </div>
+    </ng-template>
+
+    <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+        <label>{{ 'language' | translate }}</label>
+        <app-language-selection></app-language-selection>
+    </div>
+</p-card>

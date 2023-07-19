@@ -1,0 +1,245 @@
+<p-toast></p-toast>
+<p-card>
+    <ng-template #optionsTranslateTpl let-data="data">
+        {{ data.label | translate }}
+    </ng-template>
+
+    <ng-template pTemplate="title">
+        <div class="tw-flex tw-gap-2 tw-items-center">
+            <a backClick pButton icon="pi pi-chevron-left" class="p-button-rounded p-button-outlined tw-shrink-0"></a>
+            <div>
+                {{ (form.controls.uuid.value === '' ? 'create_customer' : 'edit_customer') | translate }}
+            </div>
+        </div>
+    </ng-template>
+
+    <form #ngForm="ngForm" [formGroup]="form" (submit)="save()">
+        <div class="tw-text-xl tw-font-bold">{{ 'vehicle' | translate }}</div>
+
+        <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+            <label>{{ 'car_brand' | translate }} <span class="tw-text-red-500">*</span></label>
+            <p-dropdown
+                pDropdownFix
+                formControlName="car_brand"
+                [options]="brandOptions"
+                [filter]="true"
+                styleClass="tw-w-full"
+            ></p-dropdown>
+        </div>
+        <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+            <label>{{ 'car_plate' | translate }} <span class="tw-text-red-500">*</span></label>
+            <input type="text" pInputText formControlName="car_plate" placeholder="ABC123" class="tw-uppercase" />
+            <ng-container *ngIf="ngForm.submitted && form.get('car_plate')!.invalid">
+                <small class="p-error" *ngIf="form.get('car_plate')!.errors?.['required']">
+                    {{ 'error_field_required' | translate }}
+                </small>
+                <small class="p-error" *ngIf="form.get('car_plate')!.errors?.['pattern']">
+                    {{ 'error_invalid_car_plate' | translate }}
+                </small>
+                <small class="p-error" *ngIf="form.get('car_plate')!.errors?.['exist']">
+                    {{ 'error_car_plate_already_exists' | translate }}
+                </small>
+            </ng-container>
+        </div>
+        <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+            <label>{{ 'branch' | translate }} <span class="tw-text-red-500">*</span></label>
+            <div *ngFor="let branch of branchOptions; index as idx">
+                <p-radioButton [inputId]="'branch' + idx" [value]="branch" formControlName="branch"></p-radioButton>
+                <label [for]="'branch' + idx" class="tw-ml-2 tw-cursor-pointer">{{ branch }}</label>
+            </div>
+        </div>
+        <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+            <label>{{ 'bookings' | translate }}</label>
+            <ng-container *ngFor="let group of getActiveBookings(); index as idx; last as isLast">
+                <p-panel [header]="('booking' | translate) + ' #' + (idx + 1)" [formGroup]="group" [toggleable]="true">
+                    <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-4">
+                        <div class="tw-flex tw-flex-col tw-gap-2">
+                            <label>{{ 'booking_date' | translate }} <span class="tw-text-red-500">*</span></label>
+                            <div>
+                                <p-calendar
+                                    formControlName="booking_date"
+                                    [showTime]="true"
+                                    [showIcon]="true"
+                                    [readonlyInput]="true"
+                                    [stepMinute]="10"
+                                    appendTo="body"
+                                    [defaultDate]="startBookingDate"
+                                ></p-calendar>
+                                <button
+                                    type="button"
+                                    class="tw-ml-2 p-button-outlined"
+                                    pButton
+                                    icon="pi pi-calendar-times"
+                                    (click)="group.controls.booking_date.setValue(null)"
+                                ></button>
+                            </div>
+                            <div *ngIf="ngForm.submitted && group.controls.booking_date?.errors?.required">
+                                <small class="p-error">{{ 'error_field_required' | translate }}</small>
+                            </div>
+                        </div>
+
+                        <div class="tw-flex tw-flex-col tw-gap-2">
+                            <label>{{ 'follow_up_date' | translate }}</label>
+                            <div>
+                                <p-calendar
+                                    formControlName="follow_up_date"
+                                    [showTime]="true"
+                                    [showIcon]="true"
+                                    [readonlyInput]="true"
+                                    [stepMinute]="10"
+                                    appendTo="body"
+                                    [defaultDate]="startBookingDate"
+                                ></p-calendar>
+                                <button
+                                    type="button"
+                                    class="tw-ml-2 p-button-outlined"
+                                    pButton
+                                    icon="pi pi-calendar-times"
+                                    (click)="group.controls.follow_up_date.setValue(null)"
+                                ></button>
+                            </div>
+                        </div>
+
+                        <div
+                            class="tw-flex tw-flex-col tw-gap-2"
+                            *ngIf="{ endTime: calculateBookingEndTime(group) } as bookingInfo"
+                        >
+                            <label>
+                                {{ 'booking_duration' | translate }}
+                                ({{ 'booking_duration_label_hours' | translate }})
+                            </label>
+                            <p-inputNumber
+                                formControlName="booking_duration"
+                                [min]="0"
+                                [max]="100"
+                                [minFractionDigits]="0"
+                                [maxFractionDigits]="2"
+                            ></p-inputNumber>
+                            <small *ngIf="bookingInfo.endTime">
+                                {{ 'booking_duration_ends_in' | translate }}
+                                {{ bookingInfo.endTime }}
+                            </small>
+                        </div>
+
+                        <div class="tw-flex tw-flex-col tw-gap-2">
+                            <label>{{ 'booking_type' | translate }}</label>
+                            <p-dropdown
+                                formControlName="booking_type"
+                                [options]="bookingOptions"
+                                optionValue="value"
+                                [filter]="true"
+                                styleClass="tw-w-full"
+                            >
+                                <ng-template pTemplate="selectedItem" let-data>
+                                    <ng-container
+                                        *ngTemplateOutlet="optionsTranslateTpl; context: { data: data }"
+                                    ></ng-container>
+                                </ng-template>
+                                <ng-template pTemplate="item" let-data>
+                                    <ng-container
+                                        *ngTemplateOutlet="optionsTranslateTpl; context: { data: data }"
+                                    ></ng-container>
+                                </ng-template>
+                            </p-dropdown>
+                        </div>
+
+                        <div class="tw-flex tw-flex-col tw-gap-2 lg:tw-col-span-2">
+                            <label>{{ 'remarks' | translate }}</label>
+                            <input type="text" pInputText formControlName="remark" />
+                        </div>
+                    </div>
+
+                    <div class="tw-flex tw-justify-end tw-gap-2 tw-mt-4">
+                        <button
+                            *ngIf="isLast"
+                            type="button"
+                            class="p-button-outlined"
+                            pButton
+                            [label]="'add' | translate"
+                            (click)="addToArray()"
+                        ></button>
+                        <button
+                            type="button"
+                            class="p-button-danger p-button-outlined"
+                            pButton
+                            [label]="'remove' | translate"
+                            [disabled]="getActiveBookings().length === 1"
+                            (click)="group.controls.is_active.setValue(false)"
+                        ></button>
+                    </div>
+                </p-panel>
+            </ng-container>
+        </div>
+        <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+            <label>{{ 'package' | translate }} <span class="tw-text-red-500">*</span></label>
+            <div *ngFor="let pkg of packageOptions; index as idx">
+                <p-radioButton [inputId]="'pkg' + idx" [value]="pkg" formControlName="package"></p-radioButton>
+                <label [for]="'pkg' + idx" class="tw-ml-2 tw-cursor-pointer">{{ pkg }}</label>
+            </div>
+        </div>
+        <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+            <label>{{ 'remarks' | translate }}</label>
+            <textarea pInputTextarea formControlName="remarks" [autoResize]="true" rows="3"></textarea>
+        </div>
+
+        <hr class="tw-my-8" />
+        <div class="tw-text-xl tw-font-bold">{{ 'partner' | translate }}</div>
+        <ng-container [formGroup]="form.controls.partner">
+            <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+                <label>{{ 'mobile_no' | translate }} <span class="tw-text-red-500">*</span></label>
+                <input type="text" pInputText formControlName="phone_number" placeholder="60123456789" />
+                <small class="p-error" *ngIf="ngForm.submitted && form.get('partner.phone_number')!.invalid">
+                    {{ 'error_field_required' | translate }}
+                </small>
+            </div>
+            <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+                <label>{{ 'name' | translate }} <span class="tw-text-red-500">*</span></label>
+                <input type="text" pInputText formControlName="name" placeholder="John Doe" />
+                <small class="p-error" *ngIf="ngForm.submitted && form.get('partner.name')!.invalid">
+                    {{ 'error_field_required' | translate }}
+                </small>
+            </div>
+            <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+                <label>{{ 'email' | translate }} <span class="tw-text-red-500">*</span></label>
+                <input type="text" pInputText formControlName="email" placeholder="john.doe@gmail.com" />
+                <ng-container *ngIf="ngForm.submitted && form.get('partner.email')!.invalid">
+                    <small class="p-error" *ngIf="form.get('partner.email')!.errors?.['required']">
+                        {{ 'error_field_required' | translate }}
+                    </small>
+                    <small class="p-error" *ngIf="form.get('partner.email')!.errors?.['email']">
+                        {{ 'error_invalid_email' | translate }}
+                    </small>
+                </ng-container>
+            </div>
+            <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+                <label>{{ 'language' | translate }} <span class="tw-text-red-500">*</span></label>
+                <div *ngFor="let lang of languageOptions; index as idx">
+                    <p-radioButton
+                        [inputId]="'lang' + idx"
+                        [value]="lang.code"
+                        formControlName="language"
+                    ></p-radioButton>
+                    <label [for]="'lang' + idx" class="tw-ml-2 tw-cursor-pointer">{{ lang.label }}</label>
+                </div>
+            </div>
+            <!-- <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+                <label>{{ 'address' | translate }}</label>
+                <textarea pInputTextarea formControlName="address" [autoResize]="true" rows="3"></textarea>
+            </div> -->
+            <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+                <label>{{ 'customer_from' | translate }} <span class="tw-text-red-500">*</span></label>
+                <p-dropdown
+                    pDropdownFix
+                    formControlName="customer_from"
+                    [options]="sourceOptions"
+                    [filter]="true"
+                    styleClass="tw-w-full"
+                ></p-dropdown>
+            </div>
+        </ng-container>
+
+        <div class="tw-flex tw-justify-end">
+            <button pButton="p-button-lg" [label]="'save' | translate" type="submit"></button>
+        </div>
+    </form>
+</p-card>

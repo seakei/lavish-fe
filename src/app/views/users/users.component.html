@@ -1,0 +1,73 @@
+<p-card>
+    <ng-template pTemplate="title">
+        <div class="tw-flex tw-flex-col lg:tw-flex-row tw-gap-2 tw-items-center">
+            <div>{{ 'users' | translate }}</div>
+            <div class="lg:tw-ml-auto">
+                <a
+                    pButton
+                    class="p-button-outlined"
+                    [label]="'create' | translate"
+                    icon="pi pi-plus"
+                    [routerLink]="['./create']"
+                ></a>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-container *ngIf="{ userList: userList$ | async } as context">
+        <p-table
+            #mainTable
+            [value]="context.userList?.results || []"
+            [loading]="isLoading"
+            styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
+            [rows]="25"
+            [paginator]="true"
+            [totalRecords]="context.userList?.count || 0"
+            [lazy]="true"
+            (onLazyLoad)="tableTrigger$.next($event)"
+            [filterDelay]="200"
+            [sortField]="'name'"
+        >
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th>{{ 'username' | translate }}</th>
+                    <th>{{ 'name' | translate }}</th>
+                    <th>{{ 'mobile_no' | translate }}</th>
+                    <th>{{ 'role' | translate }}</th>
+                    <th class="tw-whitespace-nowrap" style="width: 1%">{{ 'is_active_label' | translate }}</th>
+                    <th style="width: 1%"></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-item>
+                <tr>
+                    <td>
+                        <a [routerLink]="['./edit', item.uuid]" class="tw-text-blue-500">
+                            {{ item.username || '-' }}
+                        </a>
+                    </td>
+                    <td>{{ item.partner.name || '-' }}</td>
+                    <td>{{ item.partner.phone_number || '-' }}</td>
+                    <td>
+                        <span *ngIf="item.partner.role">
+                            {{ 'role_option.' + item.partner.role | translate }}
+                        </span>
+                        <span *ngIf="!item.partner.role"> - </span>
+                    </td>
+                    <td>
+                        <i class="pi pi-check-circle tw-text-green-500" *ngIf="item.is_active"></i>
+                        <i class="pi pi-times-circle tw-text-red-500" *ngIf="!item.is_active"></i>
+                    </td>
+                    <td class="tw-whitespace-nowrap">
+                        <button
+                            type="button"
+                            pButton
+                            icon="pi pi-trash"
+                            class="p-button-danger p-button-outlined p-button-sm"
+                            (click)="deleteUser(item.uuid)"
+                        ></button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </ng-container>
+</p-card>

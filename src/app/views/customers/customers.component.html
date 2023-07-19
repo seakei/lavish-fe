@@ -1,0 +1,80 @@
+<p-card *ngIf="{ customers: customers$ | async } as context">
+    <ng-template pTemplate="title">
+        <div class="tw-flex tw-flex-col lg:tw-flex-row tw-gap-2 tw-items-center">
+            <div>{{ 'customers' | translate }}</div>
+            <div class="lg:tw-ml-auto">
+                <a
+                    pButton
+                    class="p-button-outlined"
+                    [label]="'create' | translate"
+                    icon="pi pi-plus"
+                    [routerLink]="['./create']"
+                ></a>
+            </div>
+        </div>
+    </ng-template>
+
+    <p-table
+        #mainTable
+        [value]="context.customers?.results || []"
+        [loading]="isLoading"
+        styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
+        [rows]="25"
+        [paginator]="true"
+        [totalRecords]="context.customers?.count || 0"
+        [lazy]="true"
+        (onLazyLoad)="tableTrigger$.next($event)"
+        [filterDelay]="200"
+        [sortField]="'name'"
+    >
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th>{{ 'car_plate' | translate }}</th>
+                <th>{{ 'car_brand' | translate }}</th>
+                <th>{{ 'customer_name' | translate }}</th>
+                <th>{{ 'mobile_no' | translate }}</th>
+                <th>{{ 'customer_from' | translate }}</th>
+                <th style="width: 1%"></th>
+            </tr>
+            <!-- <tr>
+                <th>
+                    <input type="text" pInputText />
+                </th>
+                <th>
+                    <input type="text" pInputText />
+                </th>
+                <th>
+                    <input type="text" pInputText (input)="handleChange(mainTable, 'name', $event.target)" />
+                </th>
+                <th>
+                    <input type="text" pInputText />
+                </th>
+                <th>
+                    <p-dropdown [options]="platformOptions" optionLabel="label"></p-dropdown>
+                </th>
+            </tr> -->
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+            <tr>
+                <td>
+                    <a [routerLink]="['./edit', item.uuid]" class="tw-text-blue-500">
+                        {{ item.car_plate }}
+                    </a>
+                </td>
+                <td>{{ item.car_brand }}</td>
+                <td>{{ item.partner.name }}</td>
+                <td>{{ item.partner.phone_number }}</td>
+                <td>{{ item.partner.customer_from }}</td>
+                <td class="tw-whitespace-nowrap">
+                    <button
+                        type="button"
+                        pButton
+                        icon="pi pi-trash"
+                        class="p-button-danger p-button-outlined p-button-sm"
+                        (click)="deleteCustomer(item.uuid)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-card>

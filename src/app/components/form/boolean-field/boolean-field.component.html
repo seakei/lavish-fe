@@ -1,0 +1,23 @@
+<div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4" [formGroup]="formGroupPass">
+    <label>{{ label | translate }} <span class="tw-text-red-500">*</span></label>
+    <div>
+        <p-radioButton
+            [inputId]="inputId + 'yes'"
+            [value]="true"
+            [formControlName]="formControlNamePass"
+        ></p-radioButton>
+        <label [for]="inputId + 'yes'" class="tw-ml-2 tw-cursor-pointer">
+            {{ yesText | translate }}
+        </label>
+    </div>
+    <div>
+        <p-radioButton
+            [inputId]="inputId + 'no'"
+            [value]="false"
+            [formControlName]="formControlNamePass"
+        ></p-radioButton>
+        <label [for]="inputId + 'no'" class="tw-ml-2 tw-cursor-pointer">
+            {{ noText | translate }}
+        </label>
+    </div>
+</div>

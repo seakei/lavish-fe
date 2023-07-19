@@ -1,0 +1,47 @@
+<ng-container *ngIf="numOfDays$ | async as numOfDays">
+    <div class="tw-flex tw-mb-2">
+        <div class="tw-flex tw-gap-2 tw-mr-auto">
+            <span class="p-buttonset">
+                <button
+                    type="button"
+                    pButton
+                    class="p-button-secondary"
+                    icon="pi pi-chevron-left"
+                    mwlCalendarPreviousView
+                    view="week"
+                    [(viewDate)]="viewDate"
+                    [daysInWeek]="numOfDays"
+                ></button>
+                <button
+                    type="button"
+                    pButton
+                    class="p-button-secondary"
+                    icon="pi pi-chevron-right"
+                    mwlCalendarNextView
+                    view="week"
+                    [(viewDate)]="viewDate"
+                    [daysInWeek]="numOfDays"
+                ></button>
+            </span>
+
+            <button
+                type="button"
+                pButton
+                class="p-button-secondary"
+                label="Today"
+                mwlCalendarToday
+                [(viewDate)]="viewDate"
+            ></button>
+        </div>
+
+        <button type="button" pButton label="Create"></button>
+    </div>
+
+    <mwl-calendar-week-view
+        class="cal__fixed-headers"
+        [viewDate]="viewDate"
+        [daysInWeek]="numOfDays"
+        [events]="events"
+        (eventClicked)="eventClicked($event)"
+    ></mwl-calendar-week-view>
+</ng-container>

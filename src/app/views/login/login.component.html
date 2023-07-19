@@ -1,0 +1,40 @@
+<form #ngForm="ngForm" class="tw-max-w-lg tw-mx-auto tw-py-20 tw-px-4" (submit)="handleLogin()" [formGroup]="form">
+    <div class="tw-mb-4 tw-bg-black tw-flex tw-justify-center tw-p-4 tw-rounded-md">
+        <img
+            src="https://lavishfilm.com/wp/wp-content/themes/lavish-film/images/footer/logo.png"
+            alt="Lavish Films"
+            width="300"
+        />
+    </div>
+    <div class="tw-mb-4">
+        <p-messages [(value)]="loginErrorMessage" [enableService]="false"></p-messages>
+    </div>
+
+    <div class="tw-mb-4 tw-flex tw-justify-end">
+        <app-language-selection></app-language-selection>
+    </div>
+
+    <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+        <label for="login-user">{{ 'username' | translate }} <span class="tw-text-red-500">*</span></label>
+        <input type="text" id="login-user" pInputText formControlName="user" />
+        <small class="p-error" *ngIf="ngForm.submitted && form.controls.user.invalid">{{
+            'error_field_required' | translate
+        }}</small>
+    </div>
+    <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+        <label for="login-pass">{{ 'password' | translate }} <span class="tw-text-red-500">*</span></label>
+        <p-password
+            formControlName="pass"
+            inputId="login-pass"
+            [feedback]="false"
+            [toggleMask]="true"
+            styleClass="tw-w-full"
+            inputStyleClass="tw-w-full"
+        ></p-password>
+        <small class="p-error" *ngIf="ngForm.submitted && form.controls.pass.invalid">{{
+            'error_field_required' | translate
+        }}</small>
+    </div>
+
+    <button pButton [label]="'login' | translate" class="tw-w-full" type="submit"></button>
+</form>

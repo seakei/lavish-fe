@@ -1,0 +1,20 @@
+<ng-container *ngIf="activeLang$ | async as lang">
+    <span class="p-buttonset">
+        <button
+            type="button"
+            pButton
+            class="p-button-secondary"
+            [ngClass]="lang === 'en' ? '' : 'p-button-outlined'"
+            (click)="changeLang('en')"
+            label="English"
+        ></button>
+        <button
+            type="button"
+            pButton
+            class="p-button-secondary"
+            [ngClass]="lang === 'zh-CN' ? '' : 'p-button-outlined'"
+            (click)="changeLang('zh-CN')"
+            label="中文"
+        ></button>
+    </span>
+</ng-container>

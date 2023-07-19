@@ -1,0 +1,41 @@
+<p-card *ngIf="{ currentDate: currentDate$ | async } as context">
+    <ng-template pTemplate="title">
+        <div class="tw-flex tw-flex-col lg:tw-flex-row tw-gap-2 tw-items-center">
+            <div class="lg:tw-mr-auto">
+                {{ context.currentDate.date | date : 'dd/MM/yyyy' }}
+            </div>
+            <div>
+                <button
+                    type="button"
+                    pButton
+                    (click)="updateDate(0)"
+                    [label]="'primeng.today' | translate"
+                    class="tw-mr-2"
+                ></button>
+                <span class="p-buttonset">
+                    <button
+                        type="button"
+                        pButton
+                        class="p-button-outlined"
+                        (click)="updateDate(-1)"
+                        icon="pi pi-chevron-left"
+                    ></button>
+                    <button
+                        type="button"
+                        pButton
+                        class="p-button-outlined"
+                        (click)="updateDate(1)"
+                        icon="pi pi-chevron-right"
+                    ></button>
+                </span>
+            </div>
+        </div>
+    </ng-template>
+    <full-calendar [options]="options">
+        <ng-template #eventContent let-arg>
+            <b>{{ arg.timeText }}</b>
+            <br />
+            <i>{{ arg.event.title }}</i>
+        </ng-template>
+    </full-calendar>
+</p-card>

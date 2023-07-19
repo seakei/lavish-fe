@@ -1,0 +1,13 @@
+<p-card>
+    <ng-template pTemplate="title">
+        <div class="tw-flex tw-gap-2 tw-items-center">
+            <!-- <a backClick pButton icon="pi pi-chevron-left" class="p-button-rounded p-button-outlined tw-shrink-0"></a> -->
+            <div>{{ 'sales_order.create_sales_order' | translate }}</div>
+        </div>
+    </ng-template>
+
+    <div class="tw-mb-4">
+        <p-steps [model]="stepper" [activeIndex]="currentPageIndex$ | async" [readonly]="true"></p-steps>
+    </div>
+    <router-outlet></router-outlet>
+</p-card>

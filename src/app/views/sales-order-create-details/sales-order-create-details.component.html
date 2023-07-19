@@ -1,0 +1,107 @@
+<p-toast></p-toast>
+<form #ngForm="ngForm" [formGroup]="form" (submit)="saveSalesOrder()">
+    <div class="tw-text-xl tw-font-bold">{{ 'booking' | translate }}</div>
+    <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+        <label>{{ 'car_plate' | translate }} <span class="tw-text-red-500">*</span></label>
+        <p-dropdown
+            formControlName="car_plate"
+            [options]="carPlateOptions$ | async"
+            optionValue="uuid"
+            [filter]="true"
+            styleClass="tw-w-full"
+            (onFilter)="carPlateFilterChange$.next($event.filter)"
+            [autoDisplayFirst]="false"
+            scrollHeight="300px"
+        >
+            <ng-template pTemplate="selectedItem" let-data>
+                {{ data.car_plate }}
+            </ng-template>
+            <ng-template pTemplate="item" let-data>
+                <div>
+                    <b>{{ 'car_plate' | translate }}:</b> {{ data.car_plate }} <br />
+                    <b>{{ 'car_brand' | translate }}:</b> {{ data.car_brand }} <br />
+                    <b>{{ 'name' | translate }}:</b> {{ data.partner.name }} <br />
+                </div>
+            </ng-template>
+        </p-dropdown>
+        <small class="p-error" *ngIf="ngForm.submitted && form.get('car_plate')!.invalid">
+            {{ 'error_field_required' | translate }}
+        </small>
+    </div>
+    <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+        <label>{{ 'booking' | translate }} <span class="tw-text-red-500">*</span></label>
+        <ng-template #bookingOptionsTpl let-booking="booking" let-isOption="isOption">
+            <div>
+                <b *ngIf="isOption">{{ 'booking_date' | translate }}:</b>
+                {{ booking.booking_date | date : 'dd/MM/yyyy' }}, {{ booking.booking_date | date : 'HH:mm' }} -
+                {{ booking.booking_date_end | date : 'HH:mm' }}
+            </div>
+
+            <ng-container *ngIf="isOption">
+                <b>{{ 'booking_type' | translate }}:</b>
+                <span>&nbsp;{{ getBookingTypeText(booking.booking_type) | translate }}</span>
+                <div *ngIf="booking.remark">
+                    <b>{{ 'remarks' | translate }}:</b>
+                    {{ booking.remark }}
+                </div>
+            </ng-container>
+        </ng-template>
+
+        <p-dropdown
+            [formControl]="form.get('booking.uuid')"
+            [options]="bookingOptions$ | async"
+            optionValue="uuid"
+            styleClass="tw-w-full"
+            scrollHeight="300px"
+        >
+            <ng-template pTemplate="selectedItem" let-data>
+                <ng-container
+                    *ngTemplateOutlet="bookingOptionsTpl; context: { booking: data, isOption: false }"
+                ></ng-container>
+            </ng-template>
+            <ng-template pTemplate="item" let-data>
+                <ng-container
+                    *ngTemplateOutlet="bookingOptionsTpl; context: { booking: data, isOption: true }"
+                ></ng-container>
+            </ng-template>
+        </p-dropdown>
+    </div>
+
+    <hr class="tw-my-8" />
+    <div class="tw-text-xl tw-font-bold">{{ 'sales_order.label' | translate }}</div>
+    <app-boolean-field
+        [formGroupPass]="form"
+        formControlNamePass="installment_plan"
+        label="sales_order.instalment"
+    ></app-boolean-field>
+    <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+        <label>{{ 'customer_trait' | translate }} <span class="tw-text-red-500">*</span></label>
+        <div *ngFor="let customerTrait of customerRequirementOptions; index as idx">
+            <p-radioButton
+                [inputId]="'trait' + idx"
+                [value]="customerTrait.value"
+                formControlName="cust_requirement"
+            ></p-radioButton>
+            <label [for]="'trait' + idx" class="tw-ml-2 tw-cursor-pointer">
+                {{ customerTrait.label | translate }}
+            </label>
+        </div>
+    </div>
+    <div class="tw-flex tw-flex-col tw-gap-2 tw-mb-4">
+        <label>{{ 'sales_order.assigned_team' | translate }} <span class="tw-text-red-500">*</span></label>
+        <div *ngFor="let item of assignedTeamOptions; index as idx">
+            <p-radioButton
+                [inputId]="'team' + idx"
+                [value]="item.value"
+                formControlName="assigned_team"
+            ></p-radioButton>
+            <label [for]="'team' + idx" class="tw-ml-2 tw-cursor-pointer">
+                {{ item.label | translate }}
+            </label>
+        </div>
+    </div>
+
+    <div class="tw-flex tw-justify-end">
+        <button pButton="p-button-lg" [label]="'next' | translate" type="submit"></button>
+    </div>
+</form>

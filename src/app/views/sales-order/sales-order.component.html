@@ -1,0 +1,16 @@
+<p-card>
+    <ng-template pTemplate="title">
+        <div class="tw-flex tw-flex-col lg:tw-flex-row tw-gap-2 tw-items-center">
+            <div>{{ 'sales_order.label' | translate }}</div>
+            <div class="lg:tw-ml-auto">
+                <a
+                    pButton
+                    class="p-button-outlined"
+                    [label]="'create' | translate"
+                    icon="pi pi-plus"
+                    [routerLink]="['./create/details']"
+                ></a>
+            </div>
+        </div>
+    </ng-template>
+</p-card>

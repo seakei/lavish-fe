@@ -1,0 +1,36 @@
+/* You can add global styles to this file, and also import other style files */
+
+// @tailwind base;
+@import './preflight.css';
+@tailwind utilities;
+
+body {
+    font-family: var(--font-family);
+}
+
+.p-dialog {
+    max-width: calc(100vw - 2rem);
+
+    &.p-dialog__sm {
+        width: 640px;
+    }
+}
+
+.cal__fixed-headers mwl-calendar-week-view-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: block;
+    background-color: rgba(#fff, 0.7);
+}
+
+p-messages.p-message__single {
+    .p-message {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+}
+
+.p-fieldset .p-fieldset-legend {
+    margin-left: 1.25rem;
+}
