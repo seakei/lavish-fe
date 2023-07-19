@@ -17,6 +17,7 @@ import {
     getOrderItemFormGroup,
     getOrderItemFormGroupForTint,
 } from '../sales-order-create/get-order-items';
+import { productMap } from 'src/app/utility/product-map';
 
 const orderTypeOptions = enumToOptions(OrderTypeEnum, 'order_type_option');
 const orderModeOptions = enumToOptions(OrderModeEnum, 'order_mode_option');
@@ -45,7 +46,6 @@ export class SalesOrderCreateOrderComponent implements OnInit {
     productPackageOptions = productPackageOptions;
     orderModeEnum = OrderModeEnum;
 
-    vehiclePartOptions = vehiclePartOptions;
     jobTypeOptions = jobTypeOptions;
     itemNameOptions = itemNameOptions;
 
@@ -138,6 +138,12 @@ export class SalesOrderCreateOrderComponent implements OnInit {
             .map((val) => `job_type_option.${val}`)
             .map((val) => this.translate.instant(val))
             .join(', ');
+    }
+
+    getPartOptions(orderTypeVal: OrderTypeEnum) {
+        const vehiclePartVals = [...productMap.get(orderTypeVal)!.values()].flat();
+        const uniqueVehiclePartVals = [...new Set(vehiclePartVals)];
+        return vehiclePartOptions.filter((item) => uniqueVehiclePartVals.includes(item.value));
     }
 
     saveSalesOrder() {

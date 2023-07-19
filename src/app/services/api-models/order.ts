@@ -35,7 +35,7 @@ export type OrderTypeEnumValues =
     | 'Performance Coating Maintenance'
     | 'Ultra Coat Maintenance';
 export enum OrderTypeEnum {
-    ACCESSORIES = 'Accessories',
+    // ACCESSORIES = 'Accessories',
     TINT = 'Tint',
     COATING = 'Coating',
     PPF = 'PPF',

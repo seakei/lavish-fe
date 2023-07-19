@@ -13,6 +13,7 @@ import {
     VehiclePartEnum,
     OrderItemResponse,
 } from 'src/app/services/api-models/order-item';
+import { productMap } from 'src/app/utility/product-map';
 
 export interface OrderFormGroup {
     uuid: FormControl<string>;
@@ -63,52 +64,8 @@ export const getOrderItemFormGroupForTint = (
 ): FormArray<FormGroup<OrderItemsFormGroup>> => {
     let parts: VehiclePartEnum[] = [];
 
-    if (order.order_mode === OrderModeEnum.PACKAGE) {
-        if (order.order_type === OrderTypeEnum.TINT) {
-            parts = [
-                VehiclePartEnum.FRONT_WINDSCREEN,
-                VehiclePartEnum.REAR_WINDSCREEN,
-                VehiclePartEnum.SIDE_WINDOW_L1,
-                VehiclePartEnum.SIDE_WINDOW_L2,
-                VehiclePartEnum.SIDE_WINDOW_L3,
-                VehiclePartEnum.SIDE_WINDOW_R1,
-                VehiclePartEnum.SIDE_WINDOW_R2,
-                VehiclePartEnum.SIDE_WINDOW_R3,
-                VehiclePartEnum.SUNROOF_2,
-                VehiclePartEnum.SUNVISOR,
-            ];
-        } else if (order.order_type === OrderTypeEnum.COATING) {
-            parts = [VehiclePartEnum.BODYPAINT, VehiclePartEnum.SPORT_RIM, VehiclePartEnum.WINDOWS];
-
-            if (order.product_package === ProductPackageEnum.CRYSTAL_GLOSS_9H) {
-                parts = [
-                    VehiclePartEnum.BODYPAINT,
-                    VehiclePartEnum.INTERIOR,
-                    VehiclePartEnum.SPORT_RIM,
-                    VehiclePartEnum.WINDOWS,
-                ];
-            } else if (order.product_package === ProductPackageEnum.MULTI_QUARTZ_9H) {
-                parts = [
-                    VehiclePartEnum.BODYPAINT,
-                    VehiclePartEnum.HEADLIGHT_L,
-                    VehiclePartEnum.HEADLIGHT_R,
-                    VehiclePartEnum.INTERIOR,
-                    VehiclePartEnum.SPORT_RIM,
-                    VehiclePartEnum.WINDOWS,
-                ];
-            }
-        } else if (order.order_type === OrderTypeEnum.PPF) {
-            parts = [
-                VehiclePartEnum.DOOR_CUP_L1,
-                VehiclePartEnum.DOOR_CUP_L2,
-                VehiclePartEnum.DOOR_CUP_R1,
-                VehiclePartEnum.DOOR_CUP_R2,
-                VehiclePartEnum.DOOR_EDGE_L1,
-                VehiclePartEnum.DOOR_EDGE_L2,
-                VehiclePartEnum.DOOR_EDGE_R1,
-                VehiclePartEnum.DOOR_EDGE_R2,
-            ];
-        }
+    if (order.order_mode === OrderModeEnum.PACKAGE && order.product_package) {
+        parts = productMap.get(order.order_type)!.get(order.product_package)!;
     }
 
     const formArr = fb.array<FormGroup<OrderItemsFormGroup>>(

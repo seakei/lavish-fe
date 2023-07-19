@@ -190,6 +190,10 @@ export enum VehiclePartEnum {
     SIDE_STEP_R1 = 'Side Step R1',
     SIDE_STEP_R2 = 'Side Step R2',
     GIFT = 'Gift',
+    FRONT_BUMPER = 'Front Bumper',
+    FRONT_HOOD = 'Front Hood',
+    SKIRTING = 'Skirting',
+    PILLAR_AND_REAR_FENDER = 'Pillar and Rear Fender',
 }
 
 export type JobTypeEnumKeys = 'DO_IT_NOW' | 'PENDING' | 'INSTALL' | 'REMOVE_OLD_TINT';

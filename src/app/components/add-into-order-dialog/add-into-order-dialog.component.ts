@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { CustomPrimengModule } from 'src/app/modules/custom-primeng.module';
 import { OrderModeEnum, OrderRequest, OrderTypeEnum, ProductPackageEnum } from 'src/app/services/api-models/order';
 import { enumToOptions } from 'src/app/utility/enum-to-options';
+import { productMap } from 'src/app/utility/product-map';
 import { OrderFormGroup } from 'src/app/views/sales-order-create/get-order-items';
 
 const orderTypeOptions = enumToOptions(OrderTypeEnum, 'order_type_option');
@@ -58,27 +59,8 @@ export class AddIntoOrderDialogComponent implements OnInit, OnDestroy {
     getPackageOptions(orderType: OrderTypeEnum) {
         let packageVals: ProductPackageEnum[] = [];
 
-        if (orderType === OrderTypeEnum.TINT) {
-            packageVals = [
-                ProductPackageEnum.TITAN,
-                ProductPackageEnum.BRONZE,
-                ProductPackageEnum.SILVER,
-                ProductPackageEnum.GOLD,
-                ProductPackageEnum.PLATINUM,
-                ProductPackageEnum.ROYAL,
-                ProductPackageEnum.ROYAL_PLUS,
-                ProductPackageEnum.ROYAL_PLUS_SAFETY,
-            ];
-        } else if (orderType === OrderTypeEnum.COATING) {
-            packageVals = [
-                ProductPackageEnum.ELEMENTAL,
-                ProductPackageEnum.ECO_BONZ_9H,
-                ProductPackageEnum.CRYSTAL_GLOSS_9H,
-                ProductPackageEnum.MULTI_QUARTZ_9H,
-                ProductPackageEnum.AVANTGARDE,
-            ];
-        } else if (orderType === OrderTypeEnum.PPF) {
-            packageVals = [ProductPackageEnum.AVANTGARDE];
+        if ([OrderTypeEnum.TINT, OrderTypeEnum.COATING, OrderTypeEnum.PPF].includes(orderType)) {
+            packageVals = [...productMap.get(orderType)!.keys()];
         }
 
         return productPackageOptions.filter((item) => packageVals.includes(item.value));
