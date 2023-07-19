@@ -6,7 +6,7 @@ import { UserRequest, UserResponse } from './api-models/user';
 import { BookingResponse } from './api-models/booking';
 import { SalesOrderRequest, SalesOrderResponse } from './api-models/sales-order';
 
-const baseUrl = 'http://188.166.179.90:8000/api';
+const baseUrl = 'http://localhost:8000/api';
 const authUrl = (path: string) => baseUrl + '/auth-service' + path;
 const vehicleUrl = (path: string) => baseUrl + '/vehicle-service' + path;
 const usersUrl = (path: string) => baseUrl + '/auth-service/auths' + path;
