@@ -1,0 +1,67 @@
+version: "3.9"
+services:
+  pg_database:
+    container_name: lavish_pg_database
+    image: postgres:10-alpine
+    ports:
+      - "15432:5432"
+    environment:
+      POSTGRES_DB: lavish
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - lavish-database:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+    restart: always
+  django:
+    container_name: lavish_django
+    image: lavish-backend:latest
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      pg_database:
+        condition: service_healthy
+    environment:
+      DJANGO_DATABASE_HOST: pg_database
+      DJANGO_DATABASE_NAME: lavish
+      DJANGO_DATABASE_USER: postgres
+      DJANGO_DATABASE_PASSWORD: postgres
+    volumes:
+      - ./backend:/app/
+    command:
+      - "sh"
+      - "-c"
+      - |
+        python manage.py migrate
+        python manage.py setup_superoot --commit
+        exec python manage.py runserver 0.0.0.0:8000
+  # openapi:
+  #   container_name: lavish_openapi
+  #   image: openapitools/openapi-generator-cli:v6.6.0
+  #   profiles:
+  #     - openapi
+  #   depends_on:
+  #     - django
+  #   volumes:
+  #     - ./backend:/mnt/backend
+  #     - ./frontend:/mnt/frontend
+  #   command:
+  #     - "sh"
+  #     - "-c"
+  #     - |
+  #       docker-entrypoint.sh generate \
+  #         -i /mnt/backend/schema.json \
+  #         -g typescript-angular \
+  #         -o /mnt/frontend/src/app/openapi/ \
+  #         --additional-properties ngVersion=15 \
+  #         --additional-properties serviceSuffix=''
+
+volumes:
+  lavish-database: {}

@@ -1,0 +1,76 @@
+<div>
+    <p-panel [header]="'everything' | translate" [toggleable]="true" class="tw-mb-2 tw-block">
+        <div class="tw-mb-2 lg:tw-grid tw-grid-cols-[200px_1fr]">
+            <div class="tw-font-bold">{{ 'sales_order.number' | translate }}</div>
+            <div>{{ salesOrder.number }}</div>
+        </div>
+        <div class="tw-mb-2 lg:tw-grid tw-grid-cols-[200px_1fr]">
+            <div class="tw-font-bold">{{ 'sales_order.instalment' | translate }}</div>
+            <div>{{ salesOrder.installment_plan | json }}</div>
+        </div>
+        <div class="tw-mb-2 lg:tw-grid tw-grid-cols-[200px_1fr]">
+            <div class="tw-font-bold">{{ 'customer_trait' | translate }}</div>
+            <div>{{ salesOrder.cust_requirement | json }}</div>
+        </div>
+        <div class="tw-mb-2 lg:tw-grid tw-grid-cols-[200px_1fr]">
+            <div class="tw-font-bold">{{ 'sales_order.assigned_team' | translate }}</div>
+            <div>{{ salesOrder.assigned_team | json }}</div>
+        </div>
+
+        <!-- booking -->
+        <div class="tw-mb-2 lg:tw-grid tw-grid-cols-[200px_1fr]">
+            <div class="tw-font-bold">{{ 'booking_date' | translate }}</div>
+            <div>
+                {{ salesOrder.booking.booking_date | json }} +
+                {{ salesOrder.booking.booking_duration | json }}
+            </div>
+        </div>
+        <div class="tw-mb-2 lg:tw-grid tw-grid-cols-[200px_1fr]">
+            <div class="tw-font-bold">{{ 'booking_type' | translate }}</div>
+            <div>{{ salesOrder.booking.booking_type | json }}</div>
+        </div>
+        <div class="tw-mb-2 lg:tw-grid tw-grid-cols-[200px_1fr]">
+            <div class="tw-font-bold">{{ 'remarks' | translate }}</div>
+            <div>{{ salesOrder.booking.remark || '-' }}</div>
+        </div>
+
+        <!-- customer -->
+        <ng-container *ngIf="customer$ | async as customer">
+            <div class="tw-mb-2 lg:tw-grid tw-grid-cols-[200px_1fr]">
+                <div class="tw-font-bold">{{ 'car_brand' | translate }}</div>
+                <div>{{ customer.car_brand }}</div>
+            </div>
+            <div class="tw-mb-2 lg:tw-grid tw-grid-cols-[200px_1fr]">
+                <div class="tw-font-bold">{{ 'car_plate' | translate }}</div>
+                <div>{{ customer.car_plate }}</div>
+            </div>
+        </ng-container>
+    </p-panel>
+
+    <ng-container *ngFor="let order of salesOrder.orders; index as orderIdx">
+        <p-panel
+            [header]="
+                'Order #' +
+                (orderIdx + 1) +
+                ' ' +
+                order.order_type +
+                ' ' +
+                order.order_mode +
+                ' ' +
+                order.product_package
+            "
+            [toggleable]="true"
+            class="tw-mb-2 tw-block"
+        >
+            <ng-container *ngIf="let item of order.orderitems; index as itemIdx; last as isLast">
+                <div class="tw-mb-2 lg:tw-grid tw-grid-cols-[200px_1fr]">
+                    <div class="tw-font-bold">{{ 'car_plate' | translate }}</div>
+                    <div>{{ customer.car_plate }}</div>
+                </div>
+
+                <hr class="tw-my-8" *ngIf="!isLast" />
+            </ng-container>
+        </p-panel>
+    </ng-container>
+</div>
+<pre><code>{{ salesOrder | json }}</code></pre>

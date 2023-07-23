@@ -1,0 +1,4234 @@
+openapi: 3.0.3
+info:
+  title: LavishAPI
+  version: 1.0.0
+  description: Lavish API endpoints
+paths:
+  /api/audit-service/audits/:
+    get:
+      operationId: audit_service_audits_list
+      parameters:
+      - in: query
+        name: object_pk
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - audit-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAuditList'
+          description: ''
+  /api/audit-service/audits/{id}/:
+    get:
+      operationId: audit_service_audits_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this log entry.
+        required: true
+      tags:
+      - audit-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Audit'
+          description: ''
+  /api/auth-service/api-token-auth/:
+    post:
+      operationId: auth_service_api_token_auth_create
+      description: |-
+        API View that receives a POST with a user's username and password.
+
+        Returns a JSON Web Token that can be used for authenticated requests.
+      tags:
+      - auth-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JSONWebTokenRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthJSONWebToken'
+          description: ''
+  /api/auth-service/api-token-refresh:
+    post:
+      operationId: auth_service_api_token_refresh_create
+      description: |-
+        API View that returns a refreshed token (with new expiration) based on
+        existing token
+
+        If 'orig_iat' field (original issued-at-time) is found, will first check
+        if it's within expiration window, then copy it to the new token
+      tags:
+      - auth-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshJSONWebTokenRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshJSONWebToken'
+          description: ''
+  /api/auth-service/api-token-verify/:
+    post:
+      operationId: auth_service_api_token_verify_create
+      description: |-
+        API View that checks the veracity of a token, returning the token if it
+        is valid.
+      tags:
+      - auth-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyJSONWebTokenRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyJSONWebToken'
+          description: ''
+  /api/auth-service/auths/:
+    get:
+      operationId: auth_service_auths_list
+      parameters:
+      - in: query
+        name: branch
+        schema:
+          type: string
+      - in: query
+        name: is_active
+        schema:
+          type: string
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: partner__name
+        schema:
+          type: string
+      - in: query
+        name: role
+        schema:
+          type: string
+      tags:
+      - auth-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserList'
+          description: ''
+    post:
+      operationId: auth_service_auths_create
+      tags:
+      - auth-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth-service/auths/{uuid}/:
+    get:
+      operationId: auth_service_auths_retrieve
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - auth-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: auth_service_auths_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - auth-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: auth_service_auths_partial_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - auth-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    delete:
+      operationId: auth_service_auths_destroy
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - auth-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/auth-service/me/:
+    get:
+      operationId: auth_service_me_retrieve
+      tags:
+      - auth-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/inspection-service/inspections/:
+    get:
+      operationId: inspection_service_inspections_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - inspection-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInspectionList'
+          description: ''
+    post:
+      operationId: inspection_service_inspections_create
+      tags:
+      - inspection-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InspectionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InspectionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InspectionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inspection'
+          description: ''
+  /api/inspection-service/inspections/{uuid}/:
+    get:
+      operationId: inspection_service_inspections_retrieve
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - inspection-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inspection'
+          description: ''
+    put:
+      operationId: inspection_service_inspections_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - inspection-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InspectionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InspectionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InspectionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inspection'
+          description: ''
+    patch:
+      operationId: inspection_service_inspections_partial_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - inspection-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedInspectionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedInspectionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedInspectionRequest'
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inspection'
+          description: ''
+    delete:
+      operationId: inspection_service_inspections_destroy
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - inspection-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/inspection-service/inspectionsignatures/:
+    get:
+      operationId: inspection_service_inspectionsignatures_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - inspection-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInspectionSignatureList'
+          description: ''
+    post:
+      operationId: inspection_service_inspectionsignatures_create
+      tags:
+      - inspection-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InspectionSignatureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InspectionSignatureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InspectionSignatureRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InspectionSignature'
+          description: ''
+  /api/inspection-service/inspectionsignatures/{uuid}/:
+    get:
+      operationId: inspection_service_inspectionsignatures_retrieve
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - inspection-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InspectionSignature'
+          description: ''
+    put:
+      operationId: inspection_service_inspectionsignatures_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - inspection-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InspectionSignatureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InspectionSignatureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InspectionSignatureRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InspectionSignature'
+          description: ''
+    patch:
+      operationId: inspection_service_inspectionsignatures_partial_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - inspection-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedInspectionSignatureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedInspectionSignatureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedInspectionSignatureRequest'
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InspectionSignature'
+          description: ''
+    delete:
+      operationId: inspection_service_inspectionsignatures_destroy
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - inspection-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/inspection-service/inspectionuploads/:
+    get:
+      operationId: inspection_service_inspectionuploads_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - inspection-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInspectionUploadList'
+          description: ''
+    post:
+      operationId: inspection_service_inspectionuploads_create
+      tags:
+      - inspection-service
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InspectionUploadRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InspectionUploadRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InspectionUpload'
+          description: ''
+  /api/inspection-service/inspectionuploads/{uuid}/:
+    get:
+      operationId: inspection_service_inspectionuploads_retrieve
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - inspection-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InspectionUpload'
+          description: ''
+    put:
+      operationId: inspection_service_inspectionuploads_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - inspection-service
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InspectionUploadRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InspectionUploadRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InspectionUpload'
+          description: ''
+    patch:
+      operationId: inspection_service_inspectionuploads_partial_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - inspection-service
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedInspectionUploadRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedInspectionUploadRequest'
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InspectionUpload'
+          description: ''
+    delete:
+      operationId: inspection_service_inspectionuploads_destroy
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - inspection-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/salesorder-service/orderitems/:
+    get:
+      operationId: salesorder_service_orderitems_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - salesorder-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrderItemList'
+          description: ''
+    post:
+      operationId: salesorder_service_orderitems_create
+      tags:
+      - salesorder-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderItemRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderItemRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderItemRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItem'
+          description: ''
+  /api/salesorder-service/orderitems/{uuid}/:
+    get:
+      operationId: salesorder_service_orderitems_retrieve
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - salesorder-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItem'
+          description: ''
+    put:
+      operationId: salesorder_service_orderitems_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - salesorder-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderItemRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderItemRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderItemRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItem'
+          description: ''
+    patch:
+      operationId: salesorder_service_orderitems_partial_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - salesorder-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderItemRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderItemRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderItemRequest'
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItem'
+          description: ''
+    delete:
+      operationId: salesorder_service_orderitems_destroy
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - salesorder-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/salesorder-service/orders/:
+    get:
+      operationId: salesorder_service_orders_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - salesorder-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrderList'
+          description: ''
+    post:
+      operationId: salesorder_service_orders_create
+      tags:
+      - salesorder-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/salesorder-service/orders/{uuid}/:
+    get:
+      operationId: salesorder_service_orders_retrieve
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - salesorder-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    put:
+      operationId: salesorder_service_orders_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - salesorder-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    patch:
+      operationId: salesorder_service_orders_partial_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - salesorder-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderRequest'
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    delete:
+      operationId: salesorder_service_orders_destroy
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - salesorder-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/salesorder-service/salesorders/:
+    get:
+      operationId: salesorder_service_salesorders_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - salesorder-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSalesOrderList'
+          description: ''
+    post:
+      operationId: salesorder_service_salesorders_create
+      tags:
+      - salesorder-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SalesOrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SalesOrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SalesOrderRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesOrder'
+          description: ''
+  /api/salesorder-service/salesorders/{uuid}/:
+    get:
+      operationId: salesorder_service_salesorders_retrieve
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - salesorder-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesOrder'
+          description: ''
+    put:
+      operationId: salesorder_service_salesorders_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - salesorder-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SalesOrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SalesOrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SalesOrderRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesOrder'
+          description: ''
+    patch:
+      operationId: salesorder_service_salesorders_partial_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - salesorder-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSalesOrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSalesOrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSalesOrderRequest'
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesOrder'
+          description: ''
+    delete:
+      operationId: salesorder_service_salesorders_destroy
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - salesorder-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/salesorder-service/signatures/:
+    get:
+      operationId: salesorder_service_signatures_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - salesorder-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSignatureList'
+          description: ''
+    post:
+      operationId: salesorder_service_signatures_create
+      tags:
+      - salesorder-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignatureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SignatureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SignatureRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Signature'
+          description: ''
+  /api/salesorder-service/signatures/{uuid}/:
+    get:
+      operationId: salesorder_service_signatures_retrieve
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - salesorder-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Signature'
+          description: ''
+    put:
+      operationId: salesorder_service_signatures_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - salesorder-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignatureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SignatureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SignatureRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Signature'
+          description: ''
+    patch:
+      operationId: salesorder_service_signatures_partial_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - salesorder-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSignatureRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSignatureRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSignatureRequest'
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Signature'
+          description: ''
+    delete:
+      operationId: salesorder_service_signatures_destroy
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - salesorder-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/vehicle-service/bookings/:
+    get:
+      operationId: vehicle_service_bookings_list
+      parameters:
+      - in: query
+        name: booking_date_after
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: booking_date_before
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - vehicle-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBookingExtrasList'
+          description: ''
+    post:
+      operationId: vehicle_service_bookings_create
+      tags:
+      - vehicle-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingExtrasRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookingExtrasRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookingExtrasRequest'
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingExtras'
+          description: ''
+  /api/vehicle-service/bookings/{uuid}/:
+    get:
+      operationId: vehicle_service_bookings_retrieve
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - vehicle-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingExtras'
+          description: ''
+    put:
+      operationId: vehicle_service_bookings_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - vehicle-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingExtrasRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookingExtrasRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookingExtrasRequest'
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingExtras'
+          description: ''
+    patch:
+      operationId: vehicle_service_bookings_partial_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - vehicle-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBookingExtrasRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBookingExtrasRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBookingExtrasRequest'
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingExtras'
+          description: ''
+    delete:
+      operationId: vehicle_service_bookings_destroy
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - vehicle-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/vehicle-service/vehicles/:
+    get:
+      operationId: vehicle_service_vehicles_list
+      parameters:
+      - in: query
+        name: booking_date_after
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: booking_date_before
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: branch
+        schema:
+          type: string
+      - in: query
+        name: car_plate__istartswith
+        schema:
+          type: string
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - vehicle-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVehicleList'
+          description: ''
+    post:
+      operationId: vehicle_service_vehicles_create
+      tags:
+      - vehicle-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VehicleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VehicleRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+          description: ''
+  /api/vehicle-service/vehicles/{uuid}/:
+    get:
+      operationId: vehicle_service_vehicles_retrieve
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - vehicle-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+          description: ''
+    put:
+      operationId: vehicle_service_vehicles_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - vehicle-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VehicleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VehicleRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+          description: ''
+    patch:
+      operationId: vehicle_service_vehicles_partial_update
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - vehicle-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedVehicleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedVehicleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedVehicleRequest'
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+          description: ''
+    delete:
+      operationId: vehicle_service_vehicles_destroy
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        required: true
+      tags:
+      - vehicle-service
+      security:
+      - jwtAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    Audit:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        object_pk:
+          type: string
+          maxLength: 255
+        action:
+          type: string
+        changes:
+          type: string
+          title: Change message
+        remote_addr:
+          type: string
+          nullable: true
+          title: Remote address
+        timestamp:
+          type: string
+          format: date-time
+          readOnly: true
+        actor:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          nullable: true
+      required:
+      - action
+      - id
+      - object_pk
+      - timestamp
+    AuthJSONWebToken:
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+      - token
+    BaseBooking:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        created_by:
+          type: string
+          readOnly: true
+        updated_by:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        booking_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Optional, time when customer do the appointment
+        follow_up_date:
+          type: string
+          format: date-time
+          nullable: true
+          title: Booking Date
+          description: Optional, time when customer do the follow up
+        booking_duration:
+          type: number
+          format: double
+          maximum: 100
+          minimum: -100
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        booking_type:
+          nullable: true
+          minimum: 0
+          maximum: 32767
+          oneOf:
+          - $ref: '#/components/schemas/BranchEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        remark:
+          type: string
+          nullable: true
+          description: Optional
+          maxLength: 255
+        number:
+          type: string
+          maxLength: 25
+      required:
+      - created_at
+      - created_by
+      - updated_at
+      - updated_by
+      - uuid
+    BaseBookingRequest:
+      type: object
+      properties:
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        booking_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Optional, time when customer do the appointment
+        follow_up_date:
+          type: string
+          format: date-time
+          nullable: true
+          title: Booking Date
+          description: Optional, time when customer do the follow up
+        booking_duration:
+          type: number
+          format: double
+          maximum: 100
+          minimum: -100
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        booking_type:
+          nullable: true
+          minimum: 0
+          maximum: 32767
+          oneOf:
+          - $ref: '#/components/schemas/BranchEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        remark:
+          type: string
+          nullable: true
+          description: Optional
+          maxLength: 255
+        number:
+          type: string
+          maxLength: 25
+    BaseBusinessPartner:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        profile_status:
+          $ref: '#/components/schemas/BranchEnum'
+        branch:
+          $ref: '#/components/schemas/BranchEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        name:
+          type: string
+          title: Full Name
+          description: Required, Maximum of 255 Characters.
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          nullable: true
+          description: Please enter your Email Address.
+          maxLength: 255
+        ic_number:
+          type: string
+          description: Maximum of 40 digits
+          maxLength: 40
+        passport_number:
+          type: string
+          description: Maximum of 40 digits
+          maxLength: 40
+        phone_number:
+          type: string
+          description: Maximum of 40 digits
+          maxLength: 40
+        customer_from:
+          type: string
+          description: Source of Customer
+          maxLength: 100
+        address:
+          type: string
+          description: Optional, Add any extra notes related to the Loan.
+        language:
+          type: string
+          description: Please select your language
+          maxLength: 100
+        number:
+          type: string
+          maxLength: 25
+        created_by:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          readOnly: true
+          nullable: true
+        user:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          nullable: true
+      required:
+      - created_at
+      - created_by
+      - phone_number
+      - updated_at
+      - updated_by
+      - uuid
+    BaseBusinessPartnerRequest:
+      type: object
+      properties:
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        profile_status:
+          $ref: '#/components/schemas/BranchEnum'
+        branch:
+          $ref: '#/components/schemas/BranchEnum'
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        name:
+          type: string
+          title: Full Name
+          description: Required, Maximum of 255 Characters.
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          nullable: true
+          minLength: 1
+          description: Please enter your Email Address.
+          maxLength: 255
+        ic_number:
+          type: string
+          description: Maximum of 40 digits
+          maxLength: 40
+        passport_number:
+          type: string
+          description: Maximum of 40 digits
+          maxLength: 40
+        phone_number:
+          type: string
+          description: Maximum of 40 digits
+          maxLength: 40
+        customer_from:
+          type: string
+          description: Source of Customer
+          maxLength: 100
+        address:
+          type: string
+          description: Optional, Add any extra notes related to the Loan.
+        language:
+          type: string
+          description: Please select your language
+          maxLength: 100
+        number:
+          type: string
+          maxLength: 25
+        user:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          nullable: true
+      required:
+      - phone_number
+    Booking:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        booking_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Optional, time when customer do the appointment
+        follow_up_date:
+          type: string
+          format: date-time
+          nullable: true
+          title: Booking Date
+          description: Optional, time when customer do the follow up
+        booking_duration:
+          type: number
+          format: double
+          maximum: 100
+          minimum: -100
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        booking_type:
+          nullable: true
+          minimum: 0
+          maximum: 32767
+          oneOf:
+          - $ref: '#/components/schemas/BranchEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        remark:
+          type: string
+          nullable: true
+          description: Optional
+          maxLength: 255
+        number:
+          type: string
+          maxLength: 25
+        created_by:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          readOnly: true
+          nullable: true
+        vehicle:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          nullable: true
+      required:
+      - created_at
+      - created_by
+      - updated_at
+      - updated_by
+      - uuid
+    BookingExtras:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        created_by:
+          type: string
+          readOnly: true
+        updated_by:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        booking_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Optional, time when customer do the appointment
+        follow_up_date:
+          type: string
+          format: date-time
+          nullable: true
+          title: Booking Date
+          description: Optional, time when customer do the follow up
+        booking_duration:
+          type: number
+          format: double
+          maximum: 100
+          minimum: -100
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        booking_type:
+          nullable: true
+          minimum: 0
+          maximum: 32767
+          oneOf:
+          - $ref: '#/components/schemas/BranchEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        remark:
+          type: string
+          nullable: true
+          description: Optional
+          maxLength: 255
+        number:
+          type: string
+          maxLength: 25
+        vehicle:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          nullable: true
+      required:
+      - created_at
+      - created_by
+      - updated_at
+      - updated_by
+      - uuid
+    BookingExtrasRequest:
+      type: object
+      properties:
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        booking_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Optional, time when customer do the appointment
+        follow_up_date:
+          type: string
+          format: date-time
+          nullable: true
+          title: Booking Date
+          description: Optional, time when customer do the follow up
+        booking_duration:
+          type: number
+          format: double
+          maximum: 100
+          minimum: -100
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        booking_type:
+          nullable: true
+          minimum: 0
+          maximum: 32767
+          oneOf:
+          - $ref: '#/components/schemas/BranchEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        remark:
+          type: string
+          nullable: true
+          description: Optional
+          maxLength: 255
+        number:
+          type: string
+          maxLength: 25
+        vehicle:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          nullable: true
+    BookingRequest:
+      type: object
+      properties:
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        booking_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Optional, time when customer do the appointment
+        follow_up_date:
+          type: string
+          format: date-time
+          nullable: true
+          title: Booking Date
+          description: Optional, time when customer do the follow up
+        booking_duration:
+          type: number
+          format: double
+          maximum: 100
+          minimum: -100
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        booking_type:
+          nullable: true
+          minimum: 0
+          maximum: 32767
+          oneOf:
+          - $ref: '#/components/schemas/BranchEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        remark:
+          type: string
+          nullable: true
+          description: Optional
+          maxLength: 255
+        number:
+          type: string
+          maxLength: 25
+        vehicle:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          nullable: true
+    BranchEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      type: integer
+      description: |-
+        * `1` - Appointment
+        * `2` - Claim Appointment
+        * `3` - Survey Appointment
+        * `4` - Balance Appointment
+        * `5` - Coating Maintenance Appointment
+      x-enum-varnames:
+      - ENUM_APPOINTMENT
+      - ENUM_CLAIM_APPOINTMENT
+      - ENUM_SURVEY_APPOINTMENT
+      - ENUM_BALANCE_APPOINTMENT
+      - ENUM_COATING_MAINTENANCE_APPOINTMENT
+    CategoryEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      type: integer
+      description: |-
+        * `1` - Person
+        * `2` - Group
+        * `3` - Company
+      x-enum-varnames:
+      - ENUM_PERSON
+      - ENUM_GROUP
+      - ENUM_COMPANY
+    CustRequirementEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      type: integer
+      description: |-
+        * `1` - High Value
+        * `2` - Quality
+        * `3` - Attention To Detail
+        * `4` - Demanding
+        * `5` - Easy
+        * `6` - Special Request
+      x-enum-varnames:
+      - ENUM_HIGH_VALUE
+      - ENUM_QUALITY
+      - ENUM_ATTENTION_TO_DETAIL
+      - ENUM_DEMANDING
+      - ENUM_EASY
+      - ENUM_SPECIAL_REQUEST
+    DiscountTypeEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      type: integer
+      description: |-
+        * `1` - Do It Now
+        * `2` - Pending
+        * `3` - Install
+        * `4` - Remove Old
+      x-enum-varnames:
+      - ENUM_DO_IT_NOW
+      - ENUM_PENDING
+      - ENUM_INSTALL
+      - ENUM_REMOVE_OLD
+    Inspection:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        order_item:
+          $ref: '#/components/schemas/OrderItem'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        condition:
+          type: boolean
+          nullable: true
+        remarks:
+          type: string
+          nullable: true
+          maxLength: 255
+        signature_id:
+          type: string
+          nullable: true
+          title: SignatureId
+          maxLength: 40
+        number:
+          type: string
+          maxLength: 25
+        created_by:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          readOnly: true
+          nullable: true
+      required:
+      - created_at
+      - created_by
+      - order_item
+      - updated_at
+      - updated_by
+      - uuid
+    InspectionRequest:
+      type: object
+      properties:
+        order_item:
+          $ref: '#/components/schemas/OrderItemRequest'
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        condition:
+          type: boolean
+          nullable: true
+        remarks:
+          type: string
+          nullable: true
+          maxLength: 255
+        signature_id:
+          type: string
+          nullable: true
+          title: SignatureId
+          maxLength: 40
+        number:
+          type: string
+          maxLength: 25
+      required:
+      - order_item
+    InspectionSignature:
+      type: object
+      properties:
+        signature_data:
+          type: string
+      required:
+      - signature_data
+    InspectionSignatureRequest:
+      type: object
+      properties:
+        signature_data:
+          type: string
+      required:
+      - signature_data
+    InspectionUpload:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        upload_file:
+          type: string
+          format: uri
+          nullable: true
+          title: Inspection Upload file
+        created_by:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          readOnly: true
+          nullable: true
+        inspection:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+      required:
+      - created_at
+      - created_by
+      - inspection
+      - updated_at
+      - updated_by
+      - uuid
+    InspectionUploadRequest:
+      type: object
+      properties:
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        upload_file:
+          type: string
+          format: binary
+          nullable: true
+          title: Inspection Upload file
+        inspection:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+      required:
+      - inspection
+    JSONWebTokenRequest:
+      type: object
+      description: |-
+        Serializer class used to validate a username and password.
+
+        'username' is identified by the custom UserModel.USERNAME_FIELD.
+
+        Returns a JSON Web Token that can be used to authenticate later calls.
+      properties:
+        username:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - password
+      - username
+    NullEnum:
+      enum:
+      - null
+    Order:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        orderitems:
+          type: string
+          readOnly: true
+        order_type:
+          $ref: '#/components/schemas/OrderTypeEnum'
+        order_mode:
+          $ref: '#/components/schemas/OrderModeEnum'
+        product_package:
+          $ref: '#/components/schemas/ProductPackageEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        item_price:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+          title: Order Price
+        created_by:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          readOnly: true
+          nullable: true
+        salesorder:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+      required:
+      - created_at
+      - created_by
+      - orderitems
+      - salesorder
+      - updated_at
+      - updated_by
+      - uuid
+    OrderItem:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        job_type:
+          $ref: '#/components/schemas/DiscountTypeEnum'
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        vehicle_part:
+          type: string
+          nullable: true
+          title: Part
+          maxLength: 255
+        claim_insurance:
+          type: boolean
+          nullable: true
+          title: Claim Under Insurance
+        item_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        remarks:
+          type: string
+          nullable: true
+          maxLength: 255
+        addon:
+          type: string
+          nullable: true
+          title: Add-On
+          maxLength: 255
+        created_by:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          readOnly: true
+          nullable: true
+        order:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+      required:
+      - created_at
+      - created_by
+      - order
+      - updated_at
+      - updated_by
+      - uuid
+    OrderItemRequest:
+      type: object
+      properties:
+        job_type:
+          $ref: '#/components/schemas/DiscountTypeEnum'
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        vehicle_part:
+          type: string
+          nullable: true
+          title: Part
+          maxLength: 255
+        claim_insurance:
+          type: boolean
+          nullable: true
+          title: Claim Under Insurance
+        item_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        remarks:
+          type: string
+          nullable: true
+          maxLength: 255
+        addon:
+          type: string
+          nullable: true
+          title: Add-On
+          maxLength: 255
+        order:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+      required:
+      - order
+    OrderModeEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      type: integer
+      description: |-
+        * `1` - Ala-carte
+        * `2` - Continue Last Order
+        * `3` - Package
+      x-enum-varnames:
+      - ENUM_ALA_CARTE
+      - ENUM_CONTINUE_LAST_ORDER
+      - ENUM_PACKAGE
+    OrderRequest:
+      type: object
+      properties:
+        order_type:
+          $ref: '#/components/schemas/OrderTypeEnum'
+        order_mode:
+          $ref: '#/components/schemas/OrderModeEnum'
+        product_package:
+          $ref: '#/components/schemas/ProductPackageEnum'
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        item_price:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+          title: Order Price
+        salesorder:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+      required:
+      - salesorder
+    OrderTypeEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      type: integer
+      description: |-
+        * `1` - Accessories
+        * `2` - Tint
+        * `3` - Coating
+        * `4` - PPF
+        * `5` - Gift
+        * `6` - MVP
+        * `7` - Essential
+        * `8` - Deluxe
+        * `9` - Ultimate
+        * `10` - XCA1
+        * `11` - XCA2
+        * `12` - XCA3
+        * `13` - XCA5
+        * `14` - Basic Coating Maintenance
+        * `15` - Performance Coating Maintenance
+        * `16` - Ultra Coat Maintenance
+      x-enum-varnames:
+      - ENUM_ACCESSORIES
+      - ENUM_TINT
+      - ENUM_COATING
+      - ENUM_PPF
+      - ENUM_GIFT
+      - ENUM_MVP
+      - ENUM_ESSENTIAL
+      - ENUM_DELUXE
+      - ENUM_ULTIMATE
+      - ENUM_XCA1
+      - ENUM_XCA2
+      - ENUM_XCA3
+      - ENUM_XCA5
+      - ENUM_BASIC_COATING_MAINTENANCE
+      - ENUM_PERFORMANCE_COATING_MAINTENANCE
+      - ENUM_ULTRA_COAT_MAINTENANCE
+    PaginatedAuditList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Audit'
+    PaginatedBookingExtrasList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingExtras'
+    PaginatedInspectionList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Inspection'
+    PaginatedInspectionSignatureList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/InspectionSignature'
+    PaginatedInspectionUploadList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/InspectionUpload'
+    PaginatedOrderItemList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+    PaginatedOrderList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+    PaginatedSalesOrderList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SalesOrder'
+    PaginatedSignatureList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Signature'
+    PaginatedUserList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    PaginatedVehicleList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Vehicle'
+    PatchedBookingExtrasRequest:
+      type: object
+      properties:
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        booking_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Optional, time when customer do the appointment
+        follow_up_date:
+          type: string
+          format: date-time
+          nullable: true
+          title: Booking Date
+          description: Optional, time when customer do the follow up
+        booking_duration:
+          type: number
+          format: double
+          maximum: 100
+          minimum: -100
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        booking_type:
+          nullable: true
+          minimum: 0
+          maximum: 32767
+          oneOf:
+          - $ref: '#/components/schemas/BranchEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        remark:
+          type: string
+          nullable: true
+          description: Optional
+          maxLength: 255
+        number:
+          type: string
+          maxLength: 25
+        vehicle:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          nullable: true
+    PatchedInspectionRequest:
+      type: object
+      properties:
+        order_item:
+          $ref: '#/components/schemas/OrderItemRequest'
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        condition:
+          type: boolean
+          nullable: true
+        remarks:
+          type: string
+          nullable: true
+          maxLength: 255
+        signature_id:
+          type: string
+          nullable: true
+          title: SignatureId
+          maxLength: 40
+        number:
+          type: string
+          maxLength: 25
+    PatchedInspectionSignatureRequest:
+      type: object
+      properties:
+        signature_data:
+          type: string
+    PatchedInspectionUploadRequest:
+      type: object
+      properties:
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        upload_file:
+          type: string
+          format: binary
+          nullable: true
+          title: Inspection Upload file
+        inspection:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+    PatchedOrderItemRequest:
+      type: object
+      properties:
+        job_type:
+          $ref: '#/components/schemas/DiscountTypeEnum'
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        vehicle_part:
+          type: string
+          nullable: true
+          title: Part
+          maxLength: 255
+        claim_insurance:
+          type: boolean
+          nullable: true
+          title: Claim Under Insurance
+        item_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        remarks:
+          type: string
+          nullable: true
+          maxLength: 255
+        addon:
+          type: string
+          nullable: true
+          title: Add-On
+          maxLength: 255
+        order:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+    PatchedOrderRequest:
+      type: object
+      properties:
+        order_type:
+          $ref: '#/components/schemas/OrderTypeEnum'
+        order_mode:
+          $ref: '#/components/schemas/OrderModeEnum'
+        product_package:
+          $ref: '#/components/schemas/ProductPackageEnum'
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        item_price:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+          title: Order Price
+        salesorder:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+    PatchedSalesOrderRequest:
+      type: object
+      properties:
+        booking:
+          $ref: '#/components/schemas/BookingRequest'
+        cust_requirement:
+          $ref: '#/components/schemas/CustRequirementEnum'
+        assigned_team:
+          $ref: '#/components/schemas/DiscountTypeEnum'
+        surcharge_type:
+          $ref: '#/components/schemas/SurchargeTypeEnum'
+        discount_type:
+          $ref: '#/components/schemas/DiscountTypeEnum'
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        installment_plan:
+          type: boolean
+          nullable: true
+        duration:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        surcharge_price:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        upgrade_or_alacarte:
+          type: boolean
+          nullable: true
+          title: Upgrade/ Add Ala-Carte
+        remove_charge:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+          title: Remove
+        sun_visor_charge:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+          title: Sun Visor
+        discount:
+          type: boolean
+          nullable: true
+        discount_amount:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        cust_reference:
+          type: boolean
+          nullable: true
+          title: Customer Reference Fee
+        reference_fee:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        total_amount:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+          title: Total
+        balance_amount:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+          title: Balance
+        signature_id:
+          type: string
+          nullable: true
+          title: SignatureId
+          maxLength: 40
+        number:
+          type: string
+          maxLength: 25
+        sales_person_in_charge:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          nullable: true
+    PatchedSignatureRequest:
+      type: object
+      properties:
+        signature_data:
+          type: string
+    PatchedUserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          nullable: true
+          minLength: 1
+          description: Required. 256 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 255
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 128
+        first_name:
+          type: string
+          maxLength: 128
+        last_name:
+          type: string
+          maxLength: 128
+        email:
+          type: string
+          format: email
+          nullable: true
+          minLength: 1
+          description: Required, Please enter your Email Address.
+          maxLength: 255
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        force_change_password:
+          type: boolean
+          description: Force user to change password
+        partner:
+          $ref: '#/components/schemas/BaseBusinessPartnerRequest'
+    PatchedVehicleRequest:
+      type: object
+      properties:
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        car_plate:
+          type: string
+          title: Car Plate No.
+          description: Required, Maximum of 50 Characters.
+          maxLength: 50
+        car_brand:
+          type: string
+          title: Car Brand.
+          description: Required, Maximum of 255 Characters.
+          maxLength: 255
+        package:
+          type: string
+          title: Car Plate No.
+          description: Required, Maximum of 150 Characters.
+          maxLength: 150
+        remarks:
+          type: string
+          description: Optional, Add any extra notes related to the Loan.
+        branch:
+          $ref: '#/components/schemas/BranchEnum'
+        partner:
+          $ref: '#/components/schemas/BaseBusinessPartnerRequest'
+        bookings:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseBookingRequest'
+        number:
+          type: string
+          maxLength: 25
+    ProductPackageEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 17
+      - 18
+      - 19
+      - 20
+      type: integer
+      description: |-
+        * `1` - Titan
+        * `2` - Bronze
+        * `3` - Silver
+        * `4` - Gold
+        * `5` - Platinum
+        * `6` - Royal
+        * `7` - Royal Plus
+        * `8` - Royal Plus Safety
+        * `9` - Elemental
+        * `10` - Eco Bonz 9H
+        * `11` - Crystal Gloss 9H
+        * `12` - Multi Quartz 9H
+        * `13` - Avantgarde
+        * `14` - Kosmos I
+        * `15` - Kosmos II
+        * `16` - Komsos III
+        * `17` - Kleio
+        * `18` - Morpheus
+        * `19` - Matthias
+        * `20` - Maximus
+      x-enum-varnames:
+      - ENUM_TITAN
+      - ENUM_BRONZE
+      - ENUM_SILVER
+      - ENUM_GOLD
+      - ENUM_PLATINUM
+      - ENUM_ROYAL
+      - ENUM_ROYAL_PLUS
+      - ENUM_ROYAL_PLUS_SAFETY
+      - ENUM_ELEMENTAL
+      - ENUM_ECO_BONZ_9H
+      - ENUM_CRYSTAL_GLOSS_9H
+      - ENUM_MULTI_QUARTZ_9H
+      - ENUM_AVANTGARDE
+      - ENUM_KOSMOS_I
+      - ENUM_KOSMOS_II
+      - ENUM_KOMSOS_III
+      - ENUM_KLEIO
+      - ENUM_MORPHEUS
+      - ENUM_MATTHIAS
+      - ENUM_MAXIMUS
+    RefreshJSONWebToken:
+      type: object
+      description: Refresh an access token.
+      properties:
+        token:
+          type: string
+      required:
+      - token
+    RefreshJSONWebTokenRequest:
+      type: object
+      description: Refresh an access token.
+      properties:
+        token:
+          type: string
+          minLength: 1
+      required:
+      - token
+    RoleEnum:
+      enum:
+      - 1
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 2
+      type: integer
+      description: |-
+        * `1` - Administrator
+        * `3` - Telemarketer Lead
+        * `4` - Telemarketer
+        * `5` - Indoor Sales Lead
+        * `6` - Indoor Sales
+        * `7` - Technician Lead
+        * `8` - Technician
+        * `2` - Customer
+      x-enum-varnames:
+      - ENUM_ADMINISTRATOR
+      - ENUM_TELEMARKETER_LEAD
+      - ENUM_TELEMARKETER
+      - ENUM_INDOOR_SALES_LEAD
+      - ENUM_INDOOR_SALES
+      - ENUM_TECHNICIAN_LEAD
+      - ENUM_TECHNICIAN
+      - ENUM_CUSTOMER
+    SalesOrder:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        booking:
+          $ref: '#/components/schemas/Booking'
+        orders:
+          type: string
+          readOnly: true
+        cust_requirement:
+          $ref: '#/components/schemas/CustRequirementEnum'
+        assigned_team:
+          $ref: '#/components/schemas/DiscountTypeEnum'
+        surcharge_type:
+          $ref: '#/components/schemas/SurchargeTypeEnum'
+        discount_type:
+          $ref: '#/components/schemas/DiscountTypeEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        installment_plan:
+          type: boolean
+          nullable: true
+        duration:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        surcharge_price:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        upgrade_or_alacarte:
+          type: boolean
+          nullable: true
+          title: Upgrade/ Add Ala-Carte
+        remove_charge:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+          title: Remove
+        sun_visor_charge:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+          title: Sun Visor
+        discount:
+          type: boolean
+          nullable: true
+        discount_amount:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        cust_reference:
+          type: boolean
+          nullable: true
+          title: Customer Reference Fee
+        reference_fee:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        total_amount:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+          title: Total
+        balance_amount:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+          title: Balance
+        signature_id:
+          type: string
+          nullable: true
+          title: SignatureId
+          maxLength: 40
+        number:
+          type: string
+          maxLength: 25
+        created_by:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          readOnly: true
+          nullable: true
+        sales_person_in_charge:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          nullable: true
+      required:
+      - assigned_team
+      - booking
+      - created_at
+      - created_by
+      - cust_requirement
+      - orders
+      - updated_at
+      - updated_by
+      - uuid
+    SalesOrderRequest:
+      type: object
+      properties:
+        booking:
+          $ref: '#/components/schemas/BookingRequest'
+        cust_requirement:
+          $ref: '#/components/schemas/CustRequirementEnum'
+        assigned_team:
+          $ref: '#/components/schemas/DiscountTypeEnum'
+        surcharge_type:
+          $ref: '#/components/schemas/SurchargeTypeEnum'
+        discount_type:
+          $ref: '#/components/schemas/DiscountTypeEnum'
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        installment_plan:
+          type: boolean
+          nullable: true
+        duration:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        surcharge_price:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        upgrade_or_alacarte:
+          type: boolean
+          nullable: true
+          title: Upgrade/ Add Ala-Carte
+        remove_charge:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+          title: Remove
+        sun_visor_charge:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+          title: Sun Visor
+        discount:
+          type: boolean
+          nullable: true
+        discount_amount:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        cust_reference:
+          type: boolean
+          nullable: true
+          title: Customer Reference Fee
+        reference_fee:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        total_amount:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+          title: Total
+        balance_amount:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+          title: Balance
+        signature_id:
+          type: string
+          nullable: true
+          title: SignatureId
+          maxLength: 40
+        number:
+          type: string
+          maxLength: 25
+        sales_person_in_charge:
+          type: string
+          format: uuid
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+          nullable: true
+      required:
+      - assigned_team
+      - booking
+      - cust_requirement
+    Signature:
+      type: object
+      properties:
+        signature_data:
+          type: string
+      required:
+      - signature_data
+    SignatureRequest:
+      type: object
+      properties:
+        signature_data:
+          type: string
+      required:
+      - signature_data
+    StatusEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      type: integer
+      description: |-
+        * `0` - NIL
+        * `1` - ADD
+        * `2` - Change (FOC)
+        * `3` - Remain
+        * `4` - Selling
+        * `5` - Upgrade
+      x-enum-varnames:
+      - ENUM_NIL
+      - ENUM_ADD
+      - ENUM_CHANGE_FOC
+      - ENUM_REMAIN
+      - ENUM_SELLING
+      - ENUM_UPGRADE
+    SurchargeTypeEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      type: integer
+      description: |-
+        * `0` - NIL
+        * `1` - 4X4
+        * `2` - Luxury/Super
+        * `3` - MPV
+        * `4` - SUV
+      x-enum-varnames:
+      - ENUM_NIL
+      - ENUM_4X4
+      - ENUM_LUXURYSUPER
+      - ENUM_MPV
+      - ENUM_SUV
+    User:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        username:
+          type: string
+          nullable: true
+          description: Required. 256 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 255
+        first_name:
+          type: string
+          maxLength: 128
+        last_name:
+          type: string
+          maxLength: 128
+        email:
+          type: string
+          format: email
+          nullable: true
+          description: Required, Please enter your Email Address.
+          maxLength: 255
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        force_change_password:
+          type: boolean
+          description: Force user to change password
+        created_by:
+          type: string
+          readOnly: true
+        updated_by:
+          type: string
+          readOnly: true
+        partner:
+          $ref: '#/components/schemas/BaseBusinessPartner'
+      required:
+      - created_by
+      - first_name
+      - last_name
+      - partner
+      - updated_by
+      - username
+      - uuid
+    UserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          nullable: true
+          minLength: 1
+          description: Required. 256 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 255
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 128
+        first_name:
+          type: string
+          maxLength: 128
+        last_name:
+          type: string
+          maxLength: 128
+        email:
+          type: string
+          format: email
+          nullable: true
+          minLength: 1
+          description: Required, Please enter your Email Address.
+          maxLength: 255
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        force_change_password:
+          type: boolean
+          description: Force user to change password
+        partner:
+          $ref: '#/components/schemas/BaseBusinessPartnerRequest'
+      required:
+      - first_name
+      - last_name
+      - partner
+      - password
+      - username
+    Vehicle:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          title: UUID Identifier
+          description: Required, PrimaryKey none-editable
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        car_plate:
+          type: string
+          title: Car Plate No.
+          description: Required, Maximum of 50 Characters.
+          maxLength: 50
+        car_brand:
+          type: string
+          title: Car Brand.
+          description: Required, Maximum of 255 Characters.
+          maxLength: 255
+        package:
+          type: string
+          title: Car Plate No.
+          description: Required, Maximum of 150 Characters.
+          maxLength: 150
+        remarks:
+          type: string
+          description: Optional, Add any extra notes related to the Loan.
+        branch:
+          $ref: '#/components/schemas/BranchEnum'
+        partner:
+          $ref: '#/components/schemas/BaseBusinessPartner'
+        bookings:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseBooking'
+        created_by:
+          type: string
+          readOnly: true
+        updated_by:
+          type: string
+          readOnly: true
+        number:
+          type: string
+          maxLength: 25
+      required:
+      - bookings
+      - car_plate
+      - created_by
+      - partner
+      - updated_by
+      - uuid
+    VehicleRequest:
+      type: object
+      properties:
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this data is active or deleted
+        car_plate:
+          type: string
+          title: Car Plate No.
+          description: Required, Maximum of 50 Characters.
+          maxLength: 50
+        car_brand:
+          type: string
+          title: Car Brand.
+          description: Required, Maximum of 255 Characters.
+          maxLength: 255
+        package:
+          type: string
+          title: Car Plate No.
+          description: Required, Maximum of 150 Characters.
+          maxLength: 150
+        remarks:
+          type: string
+          description: Optional, Add any extra notes related to the Loan.
+        branch:
+          $ref: '#/components/schemas/BranchEnum'
+        partner:
+          $ref: '#/components/schemas/BaseBusinessPartnerRequest'
+        bookings:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseBookingRequest'
+        number:
+          type: string
+          maxLength: 25
+      required:
+      - bookings
+      - car_plate
+      - partner
+    VerifyJSONWebToken:
+      type: object
+      description: Check the veracity of an access token.
+      properties:
+        token:
+          type: string
+      required:
+      - token
+    VerifyJSONWebTokenRequest:
+      type: object
+      description: Check the veracity of an access token.
+      properties:
+        token:
+          type: string
+          minLength: 1
+      required:
+      - token
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "JWT"
+servers:
+- url: http://localhost:8000
