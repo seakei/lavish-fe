@@ -11,7 +11,8 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 1. `cd lavish-fe/backend/`
 1. `pip install -r requirements/dev.txt`
 1. `python manage.py migrate`
-1. `python manage.py runserver`
+1. `python manage.py setup_superoot --commit`
+1. `python manage.py runserver 0.0.0.0:8000`
 1. Server is running on <http://localhost:8000>
 
 ### Helper Commands
