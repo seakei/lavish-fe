@@ -30,6 +30,16 @@
                 </span>
             </div>
         </div>
+        <div *ngIf="userBranch?.includes('HQ')">
+            <label>{{ 'branch' | translate }}</label>
+            <p-dropdown
+                pDropdownFix
+                [options]="branchOptions"
+                [filter]="true"
+                styleClass="tw-w-full"
+                (onChange)="onDropdownChange($event)"
+            ></p-dropdown>
+        </div>
     </ng-template>
     <full-calendar [options]="options">
         <ng-template #eventContent let-arg>
