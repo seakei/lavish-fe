@@ -108,15 +108,18 @@ export class TodayCalendarComponent implements OnInit, OnDestroy {
                     const eventInput$ = bookings.map((booking) =>
                         this.api.getCustomer(booking.vehicle).pipe(
                             map((customer) => {
-                                const title = `(${customer.car_plate}) ${customer.car_brand} - ${booking.remark}`;
-                                return {
-                                    id: booking.uuid,
-                                    start: new Date(booking.booking_date),
-                                    end: addHours(new Date(booking.booking_date), booking.booking_duration),
-                                    title: title,
-                                    editable: false,
-                                    color: bookingColorsEnum[booking.booking_type],
-                                };
+                                const eventSources = customer.bookings.map(customerBooking => {
+                                    const title = `(${customer.car_plate}) ${customer.car_brand} - ${customerBooking.remark}`;
+                                    return {
+                                        id: customerBooking.uuid,
+                                        start: new Date(customerBooking.booking_date),
+                                        end: addHours(new Date(customerBooking.booking_date), customerBooking.booking_duration),
+                                        title: title,
+                                        editable: false,
+                                        color: bookingColorsEnum[customerBooking.booking_type as keyof typeof bookingColorsEnum],
+                                    };
+                                });
+                                return eventSources;
                             })
                         )
                     );
@@ -125,7 +128,7 @@ export class TodayCalendarComponent implements OnInit, OnDestroy {
             )
             .subscribe({
                 next: (data) => {
-                    successCallback(data);
+                    successCallback(data.flat());
                 },
                 error: (err) => {
                     console.error(err);
@@ -143,19 +146,21 @@ export class TodayCalendarComponent implements OnInit, OnDestroy {
             }).pipe(
                 takeUntil(this.unsubscribe$)
             ).subscribe({
-                next: (data) => {
-                    const bookings = data.results;
-                    const eventSources = bookings?.map((customer: CustomerResponse) => {
-                        const title = `(${customer.car_plate}) ${customer.car_brand} - ${customer.bookings[0].remark}`;
-                        return {
-                          id: customer.uuid,
-                          start: new Date(customer.bookings[0].booking_date),
-                          end: addHours(new Date(customer.bookings[0].booking_date), customer.bookings[0].booking_duration),
-                          title: title,
-                          editable: false,
-                          color: bookingColorsEnum[customer.bookings[0].booking_type as keyof typeof bookingColorsEnum],
-                        };
-                      });
+                next: (data: any) => {
+                    const results = data.results;
+                    const eventSources = results.flatMap((customer: CustomerResponse) => {
+                        return customer.bookings.map(booking => {
+                            const title = `(${customer.car_plate}) ${customer.car_brand} - ${booking.remark}`;
+                            return {
+                                id: booking.uuid,
+                                start: new Date(booking.booking_date),
+                                end: addHours(new Date(booking.booking_date), booking.booking_duration),
+                                title: title,
+                                editable: false,
+                                color: bookingColorsEnum[booking.booking_type as keyof typeof bookingColorsEnum],
+                            };
+                        });
+                    });
                     successCallback(eventSources);
                 },
                 error: (err) => {
