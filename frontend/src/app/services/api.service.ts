@@ -27,6 +27,7 @@ export interface GetBookingFilters {
     booking_date_after: string;
     booking_date_before: string;
     page_size: string;
+    branch?: string;
 }
 
 const removeUnusedItems = (item: { uuid?: string; is_active: boolean }) => {
@@ -92,6 +93,15 @@ export class ApiService {
     getCustomer(uuid: string) {
         const url = new URL(vehicleUrl(`/vehicles/${uuid}/`));
         return this.http.get<CustomerResponse>(url.toString());
+    }
+
+    getBookingsByBranch(filters: Partial<GetBookingFilters>) {
+        const url = new URL(vehicleUrl('/vehicles/'));
+        url.searchParams.set('is_active', 'true');
+        Object.entries(filters).forEach(([key, value]) => {
+            url.searchParams.set(key, value);
+        });
+        return this.http.get<PaginatedResponse<CustomerResponse>>(url.toString());
     }
 
     // ========================================
